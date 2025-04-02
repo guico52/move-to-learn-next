@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import Editor from '@monaco-editor/react';
+import MonacoEditor from './MonacoEditor';
 import styles from './MovePlayground.module.css';
 
 const defaultMoveCode = `
 module playground::hello {
-    use std::string;
-    use std::debug;
+    use std::string::String;
 
-    public fun hello_world() {
-        let message = string::utf8(b"Hello, World!");
-        debug::print(&message);
+
+    public fun hello_world(): String {
+        b"Hello, World!".to_string()
     }
 }
 `.trim();
@@ -59,19 +58,10 @@ export default function MovePlayground() {
       </div>
 
       <div className={styles.editorContainer}>
-        <Editor
-          height="100%"
-          defaultLanguage="rust"
+        <MonacoEditor
           value={code}
-          onChange={(value) => setCode(value || '')}
-          theme="vs-dark"
-          options={{
-            minimap: { enabled: false },
-            fontSize: 14,
-            lineNumbers: 'on',
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-          }}
+          onChange={setCode}
+          height="100%"
         />
       </div>
 

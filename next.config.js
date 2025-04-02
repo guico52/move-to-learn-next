@@ -5,6 +5,8 @@ const nextConfig = {
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
     return config;
   },
+  transpilePackages: ['@monaco-editor/react'],
+  postcss: true,
 };
 
 module.exports = nextConfig;

@@ -1,9 +1,21 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useAccount } from 'wagmi';
+import { useEffect } from 'react';
 import WalletConnect from '../components/WalletConnect';
 import styles from '../styles/Login.module.css';
 
 const Login: NextPage = () => {
+  const router = useRouter();
+  const { isConnected } = useAccount();
+
+  useEffect(() => {
+    if (isConnected) {
+      router.push('/dashboard');
+    }
+  }, [isConnected, router]);
+
   return (
     <div className={styles.container}>
       <Head>

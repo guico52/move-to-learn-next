@@ -26,6 +26,49 @@
   font-size: 1.5rem;
   font-weight: bold;
   color: #1e3a8a;
+  text-decoration: none;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.address {
+  color: #64748b;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.address:hover {
+  background: #f1f5f9;
+  color: #1e3a8a;
+}
+
+.logoutButton {
+  background: #ef4444;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: #dc2626;
 }
 
 .loginButton {
@@ -222,4 +265,11 @@
     grid-template-columns: 1fr;
     text-align: center;
   }
+}
+
+.placeholder {
+  width: 100px;
+  height: 36px;
+  background: #f1f5f9;
+  border-radius: 0.5rem;
 }

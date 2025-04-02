@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import Navbar from '../components/Navbar';
 import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
@@ -15,14 +16,7 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
 
-      <header className={styles.header}>
-        <nav className={styles.nav}>
-          <div className={styles.logo}>Move To Learn</div>
-          <Link href="/login" className={styles.loginButton}>
-            开始学习
-          </Link>
-        </nav>
-      </header>
+      <Navbar />
 
       <main className={styles.main}>
         <section className={styles.hero}>

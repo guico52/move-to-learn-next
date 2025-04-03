@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import WalletConnect from '../components/WalletConnect';
 import styles from '../styles/Login.module.css';
 import { useAuth } from '../hooks/useAuth';
@@ -10,34 +10,10 @@ import { useAuth } from '../hooks/useAuth';
 const Login: NextPage = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
-  const { user, loading, error, isInitializing, handleLogin } = useAuth();
+  const { user, loading, error, isInitializing } = useAuth();
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
-  const loginAttemptedRef = useRef(false);
 
-  useEffect(() => {
-    // 只有在连接钱包后且未尝试过登录时，才执行登录操作
-    if (isConnected && !loginAttemptedRef.current && !loading) {
-      const doLogin = async () => {
-        setLoginStatus('正在验证用户信息...');
-        loginAttemptedRef.current = true;
-        await handleLogin();
-      };
-      
-      doLogin();
-    } else if (!isConnected) {
-      // 重置登录状态
-      loginAttemptedRef.current = false;
-    }
-  }, [isConnected, handleLogin, loading]);
-
-  useEffect(() => {
-    // 登录成功后跳转到 dashboard
-    if (user && !isInitializing) {
-      router.push('/dashboard');
-    }
-  }, [user, isInitializing, router]);
-
-  // 显示错误信息
+  // 监听登录状态变化
   useEffect(() => {
     if (error) {
       setLoginStatus(`登录失败: ${error}`);
@@ -47,8 +23,23 @@ const Login: NextPage = () => {
       setLoginStatus('正在登录...');
     } else if (!isConnected) {
       setLoginStatus(null);
+    } else if (isConnected && !loading && !error) {
+      setLoginStatus('正在验证用户信息...');
     }
   }, [error, loading, isInitializing, isConnected]);
+
+  // 登录成功后的重定向
+  useEffect(() => {
+    if (user && !isInitializing) {
+      const redirectUrl = localStorage.getItem('redirectAfterLogin');
+      if (redirectUrl) {
+        localStorage.removeItem('redirectAfterLogin');
+        router.push(redirectUrl);
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [user, isInitializing, router]);
 
   return (
     <div className={styles.container}>

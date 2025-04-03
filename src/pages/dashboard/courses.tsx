@@ -39,39 +39,41 @@ const Courses: NextPage = () => {
   // 检查用户登录状态
   useEffect(() => {
     if (!isLoggedIn && !user) {
+      // 保存当前URL用于登录后重定向
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
       router.push('/login');
+      return;
+    }
+
+    // 获取课程数据
+    if (user) {
+      fetchCourses();
     }
   }, [isLoggedIn, user, router]);
 
   // 获取课程数据
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      
+      // 获取所有课程
+      const response = await axios.get('/api/courses');
+      
+      if (response.data.success) {
+        const allCourses = response.data.courses;
+        setCourses(allCourses);
         
-        // 获取所有课程
-        const response = await axios.get('/api/courses');
-        
-        if (response.data.success) {
-          const allCourses = response.data.courses;
-          setCourses(allCourses);
-          
-          // 筛选AI和Web3课程
-          setAiCourses(allCourses.filter((course: Course) => course.type === 'AI'));
-          setWeb3Courses(allCourses.filter((course: Course) => course.type === 'WEB3'));
-        }
-      } catch (err) {
-        setError('加载课程失败，请稍后重试');
-        console.error('获取课程失败:', err);
-      } finally {
-        setLoading(false);
+        // 筛选AI和Web3课程
+        setAiCourses(allCourses.filter((course: Course) => course.type === 'AI'));
+        setWeb3Courses(allCourses.filter((course: Course) => course.type === 'WEB3'));
       }
-    };
-
-    if (user) {
-      fetchCourses();
+    } catch (err) {
+      setError('加载课程失败，请稍后重试');
+      console.error('获取课程失败:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [user]);
+  };
 
   // 筛选当前显示的课程
   const displayedCourses = activeTab === 'all' 

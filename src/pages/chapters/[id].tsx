@@ -36,6 +36,8 @@ const ChapterDetail: NextPage = () => {
   // 检查用户登录状态
   useEffect(() => {
     if (!isLoggedIn && !user) {
+      // 保存当前URL用于登录后重定向
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
       router.push('/login');
     }
   }, [isLoggedIn, user, router]);

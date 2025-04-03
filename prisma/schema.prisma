@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  walletAddress String         @unique
+  chainId       Int
+  firstLogin    DateTime       @default(now())
+  lastLogin     DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profileId     String?
+  isInitialized Boolean        @default(false)
+  progress      UserProgress[]
+
+  @@index([walletAddress])
+}
+
+// 定义课程类型
+enum CourseType {
+  AI
+  WEB3
+}
+
+// 课程模型
+model Course {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  image       String?
+  type        CourseType
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  chapters    Chapter[]
+  progress    UserProgress[]
+}
+
+// 章节模型
+model Chapter {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  content     String?
+  order       Int
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  nextChapterId String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  progress    UserProgress[]
+
+  @@unique([courseId, order])
+  @@index([courseId])
+}
+
+// 用户学习进度模型
+model UserProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id])
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, chapterId])
+  @@index([userId, courseId])
+}

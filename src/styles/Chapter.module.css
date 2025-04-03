@@ -1,0 +1,209 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 250px; /* 侧边栏宽度 */
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.backLink {
+  margin-top: 1rem;
+  color: #3498db;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.chapterHeader {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #eee;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.breadcrumb a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.title {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+  color: #2c3e50;
+}
+
+.description {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.content {
+  background-color: white;
+  padding: 2rem;
+  min-height: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.chapterContent {
+  line-height: 1.8;
+  color: #333;
+}
+
+.chapterContent h2 {
+  font-size: 1.6rem;
+  margin: 2rem 0 1rem;
+  color: #2c3e50;
+}
+
+.chapterContent h3 {
+  font-size: 1.3rem;
+  margin: 1.5rem 0 1rem;
+  color: #2c3e50;
+}
+
+.chapterContent p {
+  margin: 1rem 0;
+}
+
+.chapterContent ul, .chapterContent ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.chapterContent li {
+  margin-bottom: 0.5rem;
+}
+
+.chapterContent pre {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 5px;
+  overflow: auto;
+  margin: 1.5rem 0;
+}
+
+.chapterContent code {
+  font-family: monospace;
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #7f8c8d;
+  text-align: center;
+  padding: 2rem;
+}
+
+.chapterFooter {
+  background-color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #eee;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.completionStatus {
+  flex: 1;
+}
+
+.completed {
+  display: flex;
+  align-items: center;
+  color: #27ae60;
+  font-weight: 500;
+}
+
+.checkmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #27ae60;
+  color: white;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.inProgress {
+  color: #3498db;
+}
+
+.navigation {
+  display: flex;
+  gap: 1rem;
+}
+
+.backToCourse {
+  padding: 0.8rem 1.5rem;
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.backToCourse:hover {
+  background-color: #dde4e6;
+}
+
+.nextButton {
+  padding: 0.8rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.nextButton:hover {
+  background-color: #2980b9;
+} 

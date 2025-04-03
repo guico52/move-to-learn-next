@@ -5,17 +5,22 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.38.0",
     "@monaco-editor/react": "^4.7.0",
+    "@prisma/client": "^6.5.0",
     "@rainbow-me/rainbowkit": "^2.2.4",
     "@tanstack/react-query": "^5.55.3",
     "ansi-to-html": "^0.7.2",
     "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
     "monaco-editor": "^0.52.2",
     "next": "^15.1.4",
+    "pg": "^8.14.1",
+    "prisma": "^6.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "viem": "2.23.3",
@@ -29,6 +34,10 @@
     "postcss": "^8.5.3",
     "postcss-preset-env": "^10.1.5",
     "tailwindcss": "^4.1.1",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "ts-node": "^10.9.2"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

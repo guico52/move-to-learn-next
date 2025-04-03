@@ -1,7 +1,7 @@
 .container {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   background-color: #f8fafc;
 }
 
@@ -90,19 +90,129 @@
   margin-bottom: 3rem;
 }
 
+/* 课程相关样式 */
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab {
+  padding: 0.8rem 1.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  color: #555;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background-color: #e9ecef;
+}
+
+.activeTab {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
 .courseGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
 .courseCard {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
+.courseCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.courseImage {
+  position: relative;
+  height: 160px;
+  background-color: #f8f9fa;
+  overflow: hidden;
+}
+
+.courseImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 3rem;
+  color: #7f8c8d;
+}
+
+.courseType {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 0.3rem 0.8rem;
+  background-color: #f39c12;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.courseInfo {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.courseInfo h3 {
+  margin: 0 0 0.8rem 0;
+  font-size: 1.3rem;
+  color: #2c3e50;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.courseInfo p {
+  margin: 0 0 1.5rem 0;
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.chapterCount {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* 原有的课程卡片样式 */
 .courseProgress {
   height: 0.5rem;
   background: #e2e8f0;
@@ -125,12 +235,6 @@
   margin-bottom: 0.5rem;
 }
 
-.courseInfo {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-}
-
 .continueButton {
   width: 100%;
   background: #2563eb;
@@ -147,6 +251,7 @@
   background: #1d4ed8;
 }
 
+/* 证书部分样式 */
 .certificates {
   margin-bottom: 3rem;
 }
@@ -183,6 +288,29 @@
   font-size: 0.875rem;
 }
 
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  color: #7f8c8d;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.emptyCourses {
+  grid-column: 1 / -1;
+  padding: 3rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #7f8c8d;
+}
+
+/* 响应式设计 */
 @media (max-width: 768px) {
   .main {
     margin-left: 0;
@@ -193,7 +321,7 @@
   .stats {
     grid-template-columns: 1fr;
   }
-
+  
   .courseGrid {
     grid-template-columns: 1fr;
   }

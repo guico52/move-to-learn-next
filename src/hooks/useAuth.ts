@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
@@ -24,9 +24,6 @@ export const useAuth = () => {
     return null;
   });
   const [loading, setLoading] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
-  const [initializeAttempts, setInitializeAttempts] = useState(0);
-  const [accountNotActivated, setAccountNotActivated] = useState(false);
   const loginAttemptedRef = useRef(false);
   const isAuthenticatingRef = useRef(false);
   
@@ -58,16 +55,6 @@ export const useAuth = () => {
       });
 
       if (response.data.success) {
-        // 如果是首次登录并且未初始化，先尝试初始化区块链资料
-        if (response.data.isFirstLogin && !response.data.user.isInitialized && !isInitializing && initializeAttempts < 3) {
-          const initResult = await initializeUser(address);
-          // 如果初始化失败，直接结束流程
-          if (!initResult) {
-            return null;
-          }
-        }
-
-        // 只有在不需要初始化或初始化成功后才设置用户状态
         setUser(response.data.user);
         loginAttemptedRef.current = true;
 
@@ -94,90 +81,9 @@ export const useAuth = () => {
     }
   };
 
-  // 初始化用户在区块链上的学习档案
-  const initializeUser = async (walletAddress: string) => {
-    // 如果已经在初始化中或尝试次数过多，则不再尝试
-    if (isInitializing || initializeAttempts >= 3) return false;
-    
-    setIsInitializing(true);
-    setInitializeAttempts(prev => prev + 1);
-    
-    try {
-      const response = await axios.post('/api/initialize-user', {
-        walletAddress,
-      });
-
-      if (response.data.success) {
-        toast.success('学习档案初始化成功！');
-        setIsInitializing(false);
-        return true;
-      } else {
-        // 处理业务逻辑错误
-        toast.error(response.data.error);
-        if (response.data.details) {
-          toast(response.data.details, {
-            duration: 6000,
-            icon: '📝',
-          });
-        }
-        resetAuthState();
-        return false;
-      }
-    } catch (err) {
-      console.error('初始化用户错误:', err);
-      
-      // 处理不同类型的错误
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError<any>;
-        if (axiosError.response?.status === 400) {
-          // 检查是否是余额不足的错误
-          if (axiosError.response.data.code === 'INSUFFICIENT_BALANCE') {
-            try {
-              // 尝试发放测试币
-              const faucetResponse = await axios.post('/api/faucet', {
-                walletAddress,
-              });
-              
-              if (faucetResponse.data.success) {
-                toast.success('已为您发放测试币，请稍后重试初始化');
-                // 等待几秒钟让交易确认
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                // 重新尝试初始化
-                return await initializeUser(walletAddress);
-              } else {
-                toast.error('发放测试币失败，请联系管理员');
-              }
-            } catch (faucetError) {
-              console.error('发放测试币错误:', faucetError);
-              toast.error('发放测试币时发生错误');
-            }
-          } else {
-            // 处理其他400错误
-            toast.error(axiosError.response.data.error);
-            if (axiosError.response.data.details) {
-              toast(axiosError.response.data.details, {
-                duration: 6000,
-                icon: '📝',
-              });
-            }
-          }
-        } else {
-          toast.error('初始化失败，请稍后重试');
-        }
-      } else {
-        toast.error('初始化过程中发生错误');
-      }
-      resetAuthState();
-      return false;
-    }
-  };
-
   // 重置所有认证状态
   const resetAuthState = () => {
     setUser(null);
-    setAccountNotActivated(false);
-    setInitializeAttempts(0);
-    setIsInitializing(false);
     loginAttemptedRef.current = false;
     isAuthenticatingRef.current = false;
     localStorage.removeItem('user');
@@ -213,10 +119,7 @@ export const useAuth = () => {
   return {
     user,
     loading,
-    isInitializing,
     isLoggedIn: !!user,
-    accountNotActivated,
     handleLogin,
-    initializeUser,
   };
 }; 

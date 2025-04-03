@@ -22,6 +22,14 @@ export default async function handler(
       chainId,
     });
 
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.error,
+        details: result.details
+      });
+    }
+
     return res.status(200).json({
       success: true,
       user: {

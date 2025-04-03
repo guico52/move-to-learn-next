@@ -7,10 +7,10 @@ import os from 'os';
 
 const execAsync = promisify(exec);
 
-// 检查 Sui CLI 是否可用
-async function checkSuiCLI(): Promise<boolean> {
+// 检查 Aptos CLI 是否可用
+async function checkAptosCLI(): Promise<boolean> {
   try {
-    await execAsync('sui --version');
+    await execAsync('aptos --version');
     return true;
   } catch {
     return false;
@@ -83,49 +83,70 @@ export default async function handler(
       });
     }
 
-    // 检查 Sui CLI
-    const cliAvailable = await checkSuiCLI();
+    // 检查 Aptos CLI
+    const cliAvailable = await checkAptosCLI();
     if (!cliAvailable) {
       return res.status(500).json({
         success: false,
-        error: '未检测到 Sui CLI。请确保已安装 Sui 并添加到系统 PATH 中。\n\n安装步骤：\n1. 访问 https://docs.sui.io/build/install\n2. 按照说明安装 Sui\n3. 确保 sui 命令可在终端中运行'
+        error: '未检测到 Aptos CLI。请确保已安装 Aptos 并添加到系统 PATH 中。\n\n安装步骤：\n1. 访问 https://aptos.dev/tools/aptos-cli/install-cli/\n2. 按照说明安装 Aptos CLI\n3. 确保 aptos 命令可在终端中运行'
       });
     }
 
     // 创建临时项目目录
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sui-playground-'));
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aptos-playground-'));
 
     try {
-      // 创建新的 Sui Move 项目
-      await execAsync('sui move new playground', {
+      // 直接在临时目录下初始化 Move 项目
+      await execAsync('aptos move init --name playground', {
         cwd: tempDir,
         encoding: 'utf8',
       });
 
-      const projectDir = path.join(tempDir, 'playground');
-      const sourcesDir = path.join(projectDir, 'sources');
+      const sourcesDir = path.join(tempDir, 'sources');
+      
+      // 确保 sources 目录存在
+      await fs.mkdir(sourcesDir, { recursive: true });
 
-      // 写入源代码文件
-      await fs.writeFile(path.join(sourcesDir, 'playground.move'), code, 'utf8');
+      // 写入源代码文件 - 使用与模块名匹配的文件名
+      const sourceFile = path.join(sourcesDir, 'hello.move');
+      await fs.writeFile(sourceFile, code, 'utf8');
 
-      // 执行编译命令
-      const { stdout, stderr } = await execAsync('sui move build', {
-        cwd: projectDir,
-        encoding: 'utf8',
-        env: {
-          ...process.env,
-          LANG: 'en_US.UTF-8',
+      // 执行编译命令，明确指定要编译的文件
+      let compileSuccess = true;
+      let compileStdout = '';
+      let compileStderr = '';
+
+      try {
+        const result = await execAsync(`aptos move compile --named-addresses playground=0x1`, {
+          cwd: tempDir,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            LANG: 'en_US.UTF-8',
+          }
+        });
+        compileStdout = result.stdout;
+        compileStderr = result.stderr;
+      } catch (error) {
+        // 编译失败时，exec 会抛出错误
+        compileSuccess = false;
+        if (error instanceof Error && 'stdout' in error && 'stderr' in error) {
+          const execError = error as { stdout: string; stderr: string };
+          compileStdout = execError.stdout;
+          compileStderr = execError.stderr;
+        } else {
+          compileStderr = error instanceof Error ? error.message : String(error);
         }
-      });
+      }
 
+      // 返回编译结果
       return res.status(200).json({
-        success: true,
-        output: stdout,
-        error: stderr || null
+        success: compileSuccess,
+        output: compileStdout,
+        error: compileStderr || null
       });
     } finally {
       // 清理临时文件
-
       console.log('tempDir', tempDir);
       try {
         await fs.rm(tempDir, { recursive: true, force: true });

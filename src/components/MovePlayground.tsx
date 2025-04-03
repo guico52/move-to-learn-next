@@ -1,14 +1,24 @@
 import { useState } from 'react';
 import MonacoEditor from './MonacoEditor';
 import styles from './MovePlayground.module.css';
+import Convert from 'ansi-to-html';
+
+const convert = new Convert({
+  newline: true,
+  escapeXML: true,
+  colors: {
+    9: '#E06C75', // 红色错误信息
+    36: '#56B6C2', // 青色文件路径
+  }
+});
 
 const defaultMoveCode = `
 module playground::hello {
+    use std::string;
     use std::string::String;
 
-
     public fun hello_world(): String {
-        b"Hello, World!".to_string()
+        string::utf8(b"HelloWorld")
     }
 }
 `.trim();
@@ -44,6 +54,10 @@ export default function MovePlayground() {
     }
   };
 
+  const formatOutput = (text: string) => {
+    return { __html: convert.toHtml(text) };
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -71,14 +85,16 @@ export default function MovePlayground() {
             编译{compileResult.success ? '成功' : '失败'}
           </h3>
           {compileResult.output && (
-            <pre className={styles.output}>
-              {compileResult.output}
-            </pre>
+            <pre 
+              className={styles.output}
+              dangerouslySetInnerHTML={formatOutput(compileResult.output)}
+            />
           )}
           {compileResult.error && (
-            <pre className={styles.error}>
-              {compileResult.error}
-            </pre>
+            <pre 
+              className={styles.error}
+              dangerouslySetInnerHTML={formatOutput(compileResult.error)}
+            />
           )}
         </div>
       )}

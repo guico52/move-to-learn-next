@@ -223,6 +223,20 @@
   background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%);
 }
 
+.courseType {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .progressBadge {
   position: absolute;
   top: 1rem;

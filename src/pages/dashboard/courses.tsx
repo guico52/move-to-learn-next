@@ -15,12 +15,25 @@ import { FiBook, FiClock, FiStar, FiUsers } from 'react-icons/fi';
 // 课程分类数据
 const courseCategories = [
   { id: 'all', name: '全部课程' },
-  { id: 'move', name: 'Move语言' },
-  { id: 'smart-contract', name: '智能合约' },
-  { id: 'defi', name: 'DeFi' },
-  { id: 'nft', name: 'NFT' },
-  { id: 'security', name: '安全审计' },
+  { id: 'AI', name: 'AI课程' },
+  { id: 'WEB3', name: 'Web3课程' },
+  { id: 'MOVE', name: 'Move语言' },
+  { id: 'SMART_CONTRACT', name: '智能合约' },
+  { id: 'DEFI', name: 'DeFi' },
+  { id: 'NFT', name: 'NFT' },
+  { id: 'SECURITY', name: '安全审计' },
 ];
+
+// 课程类型标签颜色映射
+const courseTypeColors: Record<string, string> = {
+  AI: '#10b981',
+  WEB3: '#3b82f6',
+  MOVE: '#8b5cf6',
+  SMART_CONTRACT: '#ec4899',
+  DEFI: '#f59e0b',
+  NFT: '#6366f1',
+  SECURITY: '#ef4444',
+};
 
 // 筛选条件
 const filters = [
@@ -206,6 +219,11 @@ const Courses: NextPage = () => {
                           📚
                         </div>
                       )}
+                      <div className={styles.courseType} style={{
+                        backgroundColor: courseTypeColors[course.type] || '#6b7280'
+                      }}>
+                        {courseCategories.find(cat => cat.id === course.type)?.name || course.type}
+                      </div>
                       <div className={styles.progressBadge} style={{
                         background: course.progress === 100 
                           ? '#10b981' 

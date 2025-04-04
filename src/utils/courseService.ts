@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { CourseType } from '@prisma/client';
 
 // 获取所有课程
 export const getAllCourses = async () => {
@@ -26,7 +27,7 @@ export const getAllCourses = async () => {
 };
 
 // 获取特定类型的课程
-export const getCoursesByType = async (type: 'AI' | 'WEB3') => {
+export const getCoursesByType = async (type: CourseType) => {
   try {
     const courses = await prisma.course.findMany({
       where: {

@@ -26,6 +26,11 @@ model User {
 enum CourseType {
   AI
   WEB3
+  MOVE
+  SMART_CONTRACT
+  DEFI
+  NFT
+  SECURITY
 }
 
 // 课程模型

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import DashboardTitle from '../../components/DashboardTitle';
+import AIChat from '../../components/AIChat';
 import styles from '../../styles/Dashboard.module.css';
 
 const AIAssistant: NextPage = () => {
@@ -19,7 +20,7 @@ const AIAssistant: NextPage = () => {
       <main className={styles.main}>
         <div className={styles.content}>
           <DashboardTitle title="AI助教" />
-          {/* AI助教功能将在这里实现 */}
+          <AIChat />
         </div>
       </main>
     </div>

@@ -40,6 +40,52 @@ const Home: NextPage = () => {
           </div>
         </section>
 
+        <section className={styles.incentivePlans}>
+          <h2 className={styles.sectionTitle}>生态激励体系</h2>
+          <div className={styles.plansContainer}>
+            <div className={styles.planCard}>
+              <div className={styles.planIcon}>👨‍💻</div>
+              <h3>开发者激励</h3>
+              <div className={styles.planContent}>
+                <p>激励开发者积极参与教育课程开发和学习</p>
+                <ul className={styles.planFeatures}>
+                  <li>
+                    <span className={styles.highlight}>BUG Bounty</span> 奖励计划
+                  </li>
+                  <li>课程开发激励</li>
+                  <li>技术贡献奖励</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className={styles.planCard}>
+              <div className={styles.planIcon}>🤝</div>
+              <h3>机构合作计划</h3>
+              <div className={styles.planContent}>
+                <p>提供社区专用节点部署激励</p>
+                <ul className={styles.planFeatures}>
+                  <li>联合颁发链上认证课程</li>
+                  <li>拓展社区市场</li>
+                  <li>提升平台影响力</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className={styles.planCard}>
+              <div className={styles.planIcon}>🎓</div>
+              <h3>学生成长计划</h3>
+              <div className={styles.planContent}>
+                <p>学习成就排行榜</p>
+                <ul className={styles.planFeatures}>
+                  <li>TOP100 稀有NFT奖励</li>
+                  <li>APT奖学金计划</li>
+                  <li>生态项目空投机制</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className={`${styles.marketplaceSection} ${styles.hexagonGrid}`}>
           <div className={styles.sectionContent}>
             <div className={styles.hexagonWrapper}>

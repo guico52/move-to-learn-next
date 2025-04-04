@@ -1516,3 +1516,95 @@
     max-width: 300px;
   }
 }
+
+.incentivePlans {
+  padding: 4rem 2rem;
+  background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  background: linear-gradient(135deg, #2B6CB0 0%, #4299E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.plansContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.planCard {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.planCard:hover {
+  transform: translateY(-5px);
+}
+
+.planIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.planCard h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2D3748;
+  text-align: center;
+}
+
+.planContent {
+  color: #4A5568;
+}
+
+.planContent p {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+}
+
+.planFeatures li {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.planFeatures li:before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #4299E1;
+}
+
+.highlight {
+  color: #4299E1;
+  font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .plansContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .planCard {
+    margin: 1rem;
+  }
+}

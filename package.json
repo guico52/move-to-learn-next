@@ -9,6 +9,7 @@
     "prisma:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "@aptos-labs/ts-sdk": "^1.38.0",
     "@monaco-editor/react": "^4.7.0",
     "@prisma/client": "^6.5.0",

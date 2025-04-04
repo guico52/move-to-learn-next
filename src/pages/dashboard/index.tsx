@@ -6,12 +6,59 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/Dashboard.module.css';
 import { useAuth } from '../../hooks/useAuth';
-import Link from 'next/link';
+import { 
+  WalletOutlined, 
+  TrophyOutlined,
+  FireOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+} from '@ant-design/icons';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
   const { user, loading, isLoggedIn } = useAuth();
 
+  const stats = [
+    { 
+      label: 'MTL 代币', 
+      value: '738',
+      icon: <WalletOutlined className={styles.statIcon} />,
+      color: '#1890ff'
+    },
+    { 
+      label: '本月 MTL 奖励', 
+      value: '142',
+      icon: <TrophyOutlined className={styles.statIcon} />,
+      color: '#52c41a'
+    },
+    { 
+      label: '连续学习天数', 
+      value: '14',
+      icon: <FireOutlined className={styles.statIcon} />,
+      color: '#fa8c16'
+    },
+    { 
+      label: '已学习课时', 
+      value: '127',
+      icon: <ClockCircleOutlined className={styles.statIcon} />,
+      color: '#722ed1'
+    },
+  ];
+
+  const tasks = [
+    { name: '完成今日课程单元 (1/1)', reward: '+15 MTL', completed: true },
+    { name: '完成练习题题 (5/5)', reward: '+10 MTL', completed: true },
+    { name: '分享学习笔记 (0/1)', reward: '+5 MTL', completed: false },
+  ];
+
+  const badges = [
+    { title: '初学者', icon: '🚀' },
+    { title: '连续7天', icon: '⚡' },
+    { title: 'Move达人', icon: '🏆' },
+    { title: '代码贡献者', icon: '💻' },
+    { title: 'NFT创作者', icon: '🔒' },
+    { title: '安全专家', icon: '🔒' },
+  ];
 
   // 在加载状态时显示加载界面
   if (loading) {
@@ -32,11 +79,15 @@ const Dashboard: NextPage = () => {
     return null;
   }
 
+  const completedTasks = tasks.filter(task => task.completed).length;
+  const totalTasks = tasks.length;
+  const progressPercentage = (completedTasks / totalTasks) * 100;
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>我的学习 - Move To Learn</title>
-        <meta content="Move To Learn 学习中心" name="description" />
+        <title>奖励中心 - Move To Learn</title>
+        <meta content="Move To Learn 奖励中心" name="description" />
       </Head>
 
       <Navbar />
@@ -44,90 +95,69 @@ const Dashboard: NextPage = () => {
 
       <main className={styles.main}>
         <div className={styles.content}>
-          <section className={styles.overview}>
-            <div className={styles.titleContainer}>
-              <h1 className={styles.title}>我的学习中心</h1>
-            </div>
-            <div className={styles.stats}>
-              <div className={styles.statCard}>
-                <span className={styles.statNumber}>3</span>
-                <span className={styles.statLabel}>进行中的课程</span>
+          <h1 className={styles.pageTitle}>奖励中心</h1>
+          
+          <div className={styles.statsContainer}>
+            {stats.map((stat, index) => (
+              <div 
+                key={index} 
+                className={styles.statCard}
+                style={{ borderTop: `3px solid ${stat.color}` }}
+              >
+                <div className={styles.statIconWrapper} style={{ color: stat.color }}>
+                  {stat.icon}
+                </div>
+                <div className={styles.statValue} style={{ color: stat.color }}>{stat.value}</div>
+                <div className={styles.statLabel}>{stat.label}</div>
               </div>
-              <div className={styles.statCard}>
-                <span className={styles.statNumber}>12</span>
-                <span className={styles.statLabel}>已获得证书</span>
-              </div>
-              <div className={styles.statCard}>
-                <span className={styles.statNumber}>80%</span>
-                <span className={styles.statLabel}>平均完成率</span>
-              </div>
-            </div>
-          </section>
+            ))}
+          </div>
 
-          <section className={styles.courses}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>进行中的课程</h2>
-              <button className={styles.viewAllButton}>查看全部</button>
-            </div>
-            <div className={styles.courseGrid}>
-              <div className={styles.courseCard}>
-                <div className={styles.courseProgress}>
+          <div className={styles.rewardsSection}>
+            <div className={styles.dailyTasks}>
+              <h2 className={styles.sectionTitle}>
+                <TrophyOutlined /> 每日任务
+              </h2>
+              <div className={styles.taskProgress}>
+                <div className={styles.taskProgressBar}>
                   <div 
-                    className={styles.progressBar} 
-                    style={{ width: '60%' }}
-                  ></div>
+                    className={styles.taskProgressFill} 
+                    style={{ width: `${progressPercentage}%` }}
+                  />
                 </div>
-                <h3 className={styles.courseTitle}>Move 智能合约开发入门</h3>
-                <p className={styles.courseInfo}>已完成 6/10 课时</p>
-                <button className={styles.continueButton}>继续学习</button>
+                <div className={styles.taskProgressText}>
+                  {completedTasks}/{totalTasks} 已完成
+                </div>
               </div>
-              <div className={styles.courseCard}>
-                <div className={styles.courseProgress}>
-                  <div 
-                    className={styles.progressBar} 
-                    style={{ width: '30%' }}
-                  ></div>
-                </div>
-                <h3 className={styles.courseTitle}>Web3 DApp 实战开发</h3>
-                <p className={styles.courseInfo}>已完成 3/10 课时</p>
-                <button className={styles.continueButton}>继续学习</button>
-              </div>
-              <div className={styles.courseCard}>
-                <div className={styles.courseProgress}>
-                  <div 
-                    className={styles.progressBar} 
-                    style={{ width: '80%' }}
-                  ></div>
-                </div>
-                <h3 className={styles.courseTitle}>区块链基础理论</h3>
-                <p className={styles.courseInfo}>已完成 8/10 课时</p>
-                <button className={styles.continueButton}>继续学习</button>
+              <div className={styles.taskList}>
+                {tasks.map((task, index) => (
+                  <div key={index} className={styles.taskItem}>
+                    <div className={styles.taskLeft}>
+                      <div className={`${styles.taskStatus} ${task.completed ? styles.completed : ''}`}>
+                        {task.completed && <CheckCircleOutlined />}
+                      </div>
+                      <span className={styles.taskName}>{task.name}</span>
+                    </div>
+                    <span className={styles.taskReward}>{task.reward}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </section>
 
-          <section className={styles.certificates}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>最近获得的证书</h2>
-              <button className={styles.viewAllButton}>查看全部</button>
-            </div>
-            <div className={styles.certificateGrid}>
-              <div className={styles.certificateCard}>
-                <div className={styles.certificateIcon}>🏆</div>
-                <div className={styles.certificateInfo}>
-                  <h3>Move 语言基础</h3>
-                  <p>获得时间：2024-03-28</p>
-                </div>
-              </div>
-              <div className={styles.certificateCard}>
-                <div className={styles.certificateIcon}>🏆</div>
-                <div className={styles.certificateInfo}>
-                  <h3>区块链原理与应用</h3>
-                  <p>获得时间：2024-03-15</p>
-                </div>
+            <div className={styles.achievementBadges}>
+              <h2 className={styles.sectionTitle}>
+                <TrophyOutlined /> 成就徽章
+              </h2>
+              <div className={styles.badgeGrid}>
+                {badges.map((badge, index) => (
+                  <div key={index} className={styles.badgeItem}>
+                    <div className={styles.badgeIcon}>{badge.icon}</div>
+                    <div className={styles.badgeTitle}>{badge.title}</div>
+                  </div>
+                ))}
               </div>
             </div>
-          </section>
+          </div>
         </div>
       </main>
     </div>

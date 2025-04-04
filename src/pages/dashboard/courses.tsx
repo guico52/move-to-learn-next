@@ -2,15 +2,33 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import DashboardTitle from '../../components/DashboardTitle';
 import { useAuth } from '../../hooks/useAuth';
-import styles from '../../styles/Dashboard.module.css';
+import styles from '../../styles/DashboardCourses.module.css';
+import { FiBook, FiClock, FiStar, FiUsers } from 'react-icons/fi';
 
-// 定义课程类型接口
+// 课程分类数据
+const courseCategories = [
+  { id: 'all', name: '全部课程' },
+  { id: 'move', name: 'Move语言' },
+  { id: 'smart-contract', name: '智能合约' },
+  { id: 'defi', name: 'DeFi' },
+  { id: 'nft', name: 'NFT' },
+  { id: 'security', name: '安全审计' },
+];
+
+// 筛选条件
+const filters = [
+  { id: 'difficulty', name: '难度', options: ['全部', '初级', '中级', '高级'] },
+  { id: 'status', name: '状态', options: ['全部', '进行中', '已完成', '未开始'] },
+  { id: 'sort', name: '排序', options: ['最近学习', '完成度高', '完成度低'] },
+];
+
 interface Chapter {
   id: string;
   title: string;
@@ -23,44 +41,41 @@ interface Course {
   title: string;
   description: string;
   image: string | null;
-  type: 'AI' | 'WEB3';
+  type: string;
+  difficulty: string;
   chapters: Chapter[];
+  progress: number;
+  lastStudyTime?: string;
+  totalDuration: string;
+  completedDuration: string;
 }
 
 const Courses: NextPage = () => {
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
-  const [aiCourses, setAiCourses] = useState<Course[]>([]);
-  const [web3Courses, setWeb3Courses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'ai' | 'web3'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>(
+    Object.fromEntries(filters.map(filter => [filter.id, filter.options[0]]))
+  );
 
-  // 检查用户登录状态
+  // 获取课程数据
   useEffect(() => {
-
-    // 获取课程数据
     if (user) {
       fetchCourses();
     }
-  }, [isLoggedIn, user, router]);
+  }, [isLoggedIn, user]);
 
-  // 获取课程数据
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      
-      // 获取所有课程
       const response = await axios.get('/api/courses');
       
       if (response.data.success) {
-        const allCourses = response.data.courses;
-        setCourses(allCourses);
-        
-        // 筛选AI和Web3课程
-        setAiCourses(allCourses.filter((course: Course) => course.type === 'AI'));
-        setWeb3Courses(allCourses.filter((course: Course) => course.type === 'WEB3'));
+        setCourses(response.data.courses);
       }
     } catch (err) {
       setError('加载课程失败，请稍后重试');
@@ -70,12 +85,39 @@ const Courses: NextPage = () => {
     }
   };
 
-  // 筛选当前显示的课程
-  const displayedCourses = activeTab === 'all' 
-    ? courses 
-    : activeTab === 'ai' 
-      ? aiCourses 
-      : web3Courses;
+  // 过滤课程
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'all' || course.type === activeCategory;
+    const matchesDifficulty = selectedFilters.difficulty === '全部' || course.difficulty === selectedFilters.difficulty;
+    
+    let matchesStatus = true;
+    if (selectedFilters.status !== '全部') {
+      if (selectedFilters.status === '已完成') {
+        matchesStatus = course.progress === 100;
+      } else if (selectedFilters.status === '进行中') {
+        matchesStatus = course.progress > 0 && course.progress < 100;
+      } else {
+        matchesStatus = course.progress === 0;
+      }
+    }
+    
+    return matchesSearch && matchesCategory && matchesDifficulty && matchesStatus;
+  });
+
+  // 排序课程
+  const sortedCourses = [...filteredCourses].sort((a, b) => {
+    switch (selectedFilters.sort) {
+      case '完成度高':
+        return b.progress - a.progress;
+      case '完成度低':
+        return a.progress - b.progress;
+      case '最近学习':
+      default:
+        return new Date(b.lastStudyTime || 0).getTime() - new Date(a.lastStudyTime || 0).getTime();
+    }
+  });
 
   return (
     <div className={styles.container}>
@@ -91,59 +133,125 @@ const Courses: NextPage = () => {
         <div className={styles.content}>
           <DashboardTitle title="我的课程" />
           
-          {/* 课程类型选择标签 */}
-          <div className={styles.tabs}>
-            <button 
-              className={`${styles.tab} ${activeTab === 'all' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              全部课程
-            </button>
-            <button 
-              className={`${styles.tab} ${activeTab === 'ai' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('ai')}
-            >
-              AI课程
-            </button>
-            <button 
-              className={`${styles.tab} ${activeTab === 'web3' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('web3')}
-            >
-              Web3课程
-            </button>
+          {/* 搜索栏 */}
+          <div className={styles.searchContainer}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="搜索我的课程..."
+              className={styles.searchInput}
+            />
+          </div>
+
+          {/* 课程分类 */}
+          <div className={styles.categoryContainer}>
+            {courseCategories.map((category) => (
+              <button
+                key={category.id}
+                className={`${styles.categoryButton} ${
+                  activeCategory === category.id ? styles.categoryActive : ''
+                }`}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+
+          {/* 筛选条件 */}
+          <div className={styles.filterContainer}>
+            {filters.map((filter) => (
+              <div key={filter.id} className={styles.filterWrapper}>
+                <span className={styles.filterLabel}>{filter.name}：</span>
+                <select
+                  value={selectedFilters[filter.id]}
+                  onChange={(e) => setSelectedFilters(prev => ({ ...prev, [filter.id]: e.target.value }))}
+                  className={styles.filterSelect}
+                >
+                  {filter.options.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
           </div>
           
+          {/* 课程列表 */}
           {loading ? (
-            <div className={styles.loading}>加载中...</div>
+            <div className={styles.loading}>
+              <div className={styles.loadingSpinner}></div>
+              加载中...
+            </div>
           ) : error ? (
-            <div className={styles.error}>{error}</div>
+            <div className={styles.error}>
+              <span>❌</span> {error}
+            </div>
           ) : (
             <div className={styles.courseGrid}>
-              {displayedCourses.length > 0 ? (
-                displayedCourses.map((course) => (
+              {sortedCourses.length > 0 ? (
+                sortedCourses.map((course) => (
                   <Link href={`/courses/${course.id}`} key={course.id} className={styles.courseCard}>
                     <div className={styles.courseImage}>
                       {course.image ? (
-                        <img src={course.image} alt={course.title} />
+                        <Image
+                          src={course.image}
+                          alt={course.title}
+                          layout="fill"
+                          objectFit="cover"
+                          priority
+                        />
                       ) : (
                         <div className={styles.imagePlaceholder}>
-                          {course.type === 'AI' ? '🤖' : '🔗'}
+                          📚
                         </div>
                       )}
-                      <span className={styles.courseType}>{course.type}</span>
+                      <div className={styles.progressBadge} style={{
+                        background: course.progress === 100 
+                          ? '#10b981' 
+                          : course.progress > 0 
+                            ? '#3b82f6' 
+                            : '#6b7280'
+                      }}>
+                        {course.progress === 100 
+                          ? '已完成' 
+                          : course.progress > 0 
+                            ? `${course.progress}%` 
+                            : '未开始'
+                        }
+                      </div>
                     </div>
                     <div className={styles.courseInfo}>
                       <h3>{course.title}</h3>
                       <p>{course.description}</p>
-                      <div className={styles.chapterCount}>
-                        {course.chapters.length} 章节
+                      <div className={styles.courseMeta}>
+                        <div className={styles.metaItem}>
+                          <FiBook className={styles.icon} />
+                          <span>{course.chapters.length} 章节</span>
+                        </div>
+                        <div className={styles.metaItem}>
+                          <FiClock className={styles.icon} />
+                          <span>{course.completedDuration}/{course.totalDuration}</span>
+                        </div>
+                        {course.lastStudyTime && (
+                          <div className={styles.lastStudy}>
+                            上次学习：{new Date(course.lastStudyTime).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.progressBar}>
+                        <div 
+                          className={styles.progressFill} 
+                          style={{ width: `${course.progress}%` }}
+                        />
                       </div>
                     </div>
                   </Link>
                 ))
               ) : (
                 <div className={styles.emptyCourses}>
-                  当前没有可用的{activeTab === 'all' ? '' : activeTab === 'ai' ? 'AI' : 'Web3'}课程
+                  <span>📚</span>
+                  <p>没有找到符合条件的课程</p>
                 </div>
               )}
             </div>

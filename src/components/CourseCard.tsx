@@ -1,73 +1,81 @@
 import React from 'react';
 import Image from 'next/image';
-import styles from '../styles/Home.module.css';
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  difficulty: string;
-  chapters: number;
-  rating: number;
-  duration: string;
-  price: number;
-  students: string;
-  image: string;
-  tags: string[];
-}
+import Link from 'next/link';
+import styles from '../styles/CourseCard.module.css';
+import { FiBook, FiClock, FiStar, FiUsers } from 'react-icons/fi';
 
 interface CourseCardProps {
-  course: Course;
+  course: {
+    id: string;
+    title: string;
+    description: string;
+    type: string;
+    difficulty: string;
+    chapters: number;
+    rating: number;
+    duration: string;
+    price: number;
+    students: string;
+    image: string;
+    tags: string[];
+  };
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   return (
-    <div className={styles.courseCard}>
-      <div className={styles.courseImageWrapper}>
-        <Image
-          src={course.image}
-          alt={course.title}
-          width={400}
-          height={250}
-          className={styles.courseImage}
-        />
-      </div>
-      <div className={styles.courseInfo}>
-        <div className={styles.courseHeader}>
-          <h3 className={styles.courseTitle}>{course.title}</h3>
-          <div className={styles.courseTags}>
-            <span className={styles.difficultyTag}>{course.difficulty}</span>
-            {course.tags.map((tag, index) => (
-              <span key={index} className={styles.tag}>
-                {tag}
-              </span>
-            ))}
+    <Link href={`/courses/${course.id}`}>
+      <div className={styles.card}>
+        <div className={styles.imageContainer}>
+          <Image
+            src={course.image}
+            alt={course.title}
+            className={styles.image}
+            layout="fill"
+            priority
+          />
+        </div>
+        <div className={styles.content}>
+          <h3 className={styles.title}>{course.title}</h3>
+          <p className={styles.description}>{course.description}</p>
+          <div className={styles.meta}>
+            <div className={styles.metaItem}>
+              <FiBook className={styles.icon} />
+              <span>{course.chapters}章节</span>
+            </div>
+            <div className={styles.metaItem}>
+              <FiClock className={styles.icon} />
+              <span>{course.duration}</span>
+            </div>
+            <div className={styles.metaItem}>
+              <FiUsers className={styles.icon} />
+              <span>{course.students}</span>
+            </div>
           </div>
-        </div>
-        <p className={styles.courseDescription}>{course.description}</p>
-        <div className={styles.courseMeta}>
-          <span className={styles.metaItem}>
-            <span className={styles.metaIcon}>📚</span>
-            {course.chapters}课时
-          </span>
-          <span className={styles.metaItem}>
-            <span className={styles.metaIcon}>⭐</span>
-            {course.rating.toFixed(1)}
-          </span>
-          <span className={styles.metaItem}>
-            <span className={styles.metaIcon}>👥</span>
-            {course.students}
-          </span>
-        </div>
-        <div className={styles.courseFooter}>
-          <span className={styles.coursePrice}>
-            {course.price === 0 ? '免费' : `${course.price} MTL`}
-          </span>
-          <button className={styles.startButton}>开始学习</button>
+          <div className={styles.footer}>
+            <div className={styles.price}>
+              {course.price === 0 ? (
+                <span className={styles.free}>免费</span>
+              ) : (
+                <span>￥{course.price}</span>
+              )}
+            </div>
+            <div className={styles.rating}>
+              <FiStar className={styles.icon} style={{ color: '#f59e0b' }} />
+              <span className={styles.ratingValue}>{course.rating}</span>
+            </div>
+          </div>
+          {course.tags.length > 0 && (
+            <div className={styles.tags}>
+              {course.tags.map((tag) => (
+                <span key={tag} className={styles.tag}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

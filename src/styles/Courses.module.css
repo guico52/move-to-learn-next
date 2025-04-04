@@ -1,100 +1,108 @@
 .container {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #f8fafc;
+  background-color: #f8fafc;
+  padding: 2rem 1rem;
 }
 
 .main {
-  flex: 1;
-  margin-top: 4rem;
-  padding: 2rem 0;
-}
-
-.searchSection {
-  background: white;
-  padding: 2rem 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.categorySection {
-  background: white;
-  padding: 1rem 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.categoryTabs {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding-top: 2rem;
+}
+
+/* 搜索栏样式 */
+.searchContainer {
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: block;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 1rem;
+  background-color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px -1px rgba(59, 130, 246, 0.2);
+}
+
+/* 分类按钮样式 */
+.categoryContainer {
   display: flex;
   gap: 1rem;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  justify-content: center;
 }
 
-.categoryTabs::-webkit-scrollbar {
-  display: none;
-}
-
-.categoryTab {
-  padding: 0.5rem 1.5rem;
+.categoryButton {
+  padding: 0.75rem 1.5rem;
   border: none;
-  background: none;
+  border-radius: 0.75rem;
+  background-color: white;
   color: #64748b;
-  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-  border-radius: 9999px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.categoryTab:hover {
-  color: #3b82f6;
-  background: #f0f7ff;
+.categoryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.categoryTab.active {
-  background: #3b82f6;
+.categoryActive {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
 }
 
-.filterSection {
-  background: white;
-  padding: 1rem 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.filterBar {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+/* 筛选条件样式 */
+.filterContainer {
   display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.filterBar::-webkit-scrollbar {
-  display: none;
+.filterWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterLabel {
+  color: #64748b;
+  font-weight: 500;
 }
 
 .filterSelect {
   padding: 0.5rem 2rem 0.5rem 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  background: white;
+  background-color: white;
   color: #1e293b;
   font-size: 0.875rem;
   cursor: pointer;
+  transition: all 0.3s ease;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
 }
 
 .filterSelect:focus {
@@ -103,36 +111,47 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.recommendedSection {
-  max-width: 1200px;
-  margin: 2rem auto 0;
-  padding: 0 1rem;
-}
-
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 1.5rem;
-}
-
+/* 课程网格样式 */
 .courseGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
+  animation: fadeIn 0.5s ease;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
 @media (max-width: 768px) {
-  .filterBar {
-    flex-wrap: wrap;
+  .filterContainer {
+    flex-direction: column;
+    gap: 1rem;
   }
-
+  
+  .filterWrapper {
+    width: 100%;
+  }
+  
   .filterSelect {
-    flex: 1;
-    min-width: 150px;
+    width: 100%;
   }
-
-  .courseGrid {
-    grid-template-columns: 1fr;
+  
+  .categoryContainer {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .categoryButton {
+    flex-shrink: 0;
   }
 } 

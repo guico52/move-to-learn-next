@@ -8,7 +8,7 @@ const nextConfig = {
   transpilePackages: ['@monaco-editor/react'],
   postcss: true,
   images: {
-    domains: ['picsum.photos'],
+    domains: ['picsum.photos', 'minio.guico.tech'],
   },
 };
 

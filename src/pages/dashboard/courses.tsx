@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import DashboardTitle from '../../components/DashboardTitle';
 import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/Dashboard.module.css';
 
@@ -88,7 +89,7 @@ const Courses: NextPage = () => {
 
       <main className={styles.main}>
         <div className={styles.content}>
-          <h1 className={styles.title}>我的课程</h1>
+          <DashboardTitle title="我的课程" />
           
           {/* 课程类型选择标签 */}
           <div className={styles.tabs}>

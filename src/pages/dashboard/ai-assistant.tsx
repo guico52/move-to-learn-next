@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import DashboardTitle from '../../components/DashboardTitle';
 import styles from '../../styles/Dashboard.module.css';
 
 const AIAssistant: NextPage = () => {
@@ -17,7 +18,7 @@ const AIAssistant: NextPage = () => {
 
       <main className={styles.main}>
         <div className={styles.content}>
-          <h1 className={styles.title}>AI助教</h1>
+          <DashboardTitle title="AI助教" />
           {/* AI助教功能将在这里实现 */}
         </div>
       </main>

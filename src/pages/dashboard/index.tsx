@@ -6,6 +6,7 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/Dashboard.module.css';
 import { useAuth } from '../../hooks/useAuth';
+import Link from 'next/link';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
@@ -44,7 +45,9 @@ const Dashboard: NextPage = () => {
       <main className={styles.main}>
         <div className={styles.content}>
           <section className={styles.overview}>
-            <h1 className={styles.title}>我的学习中心</h1>
+            <div className={styles.titleContainer}>
+              <h1 className={styles.title}>我的学习中心</h1>
+            </div>
             <div className={styles.stats}>
               <div className={styles.statCard}>
                 <span className={styles.statNumber}>3</span>

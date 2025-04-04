@@ -16,11 +16,18 @@ import {
 } from "@aptos-labs/ts-sdk";
 import { aptosConfig } from '@/config';
 
+const navLinks = [
+  { href: '/courses', label: '课程' },
+  { href: '/community', label: '社区' },
+  { href: '/ecosystem', label: '生态系统' },
+  { href: '/dashboard', label: '我的学习' },
+];
+
 const Navbar = () => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -30,6 +37,8 @@ const Navbar = () => {
     await disconnect();
     router.push('/');
   };
+
+  const isDashboard = router.pathname.startsWith('/dashboard');
 
   // 在客户端渲染之前返回一个占位导航栏
   if (!mounted) {
@@ -50,23 +59,37 @@ const Navbar = () => {
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
-        <Link href="/" className={styles.logo}>
-          Move To Learn
-        </Link>
-        <div className={styles.navRight}>
-          {isConnected ? (
-            <div className={styles.userInfo}>
-              <Link href="/dashboard" className={styles.address}>
-                {address?.slice(0, 6)}...{address?.slice(-4)}
-              </Link>
-              <button onClick={handleDisconnect} className={styles.logoutButton}>
-                退出登录
-              </button>
-            </div>
-          ) : (
-            <Link href="/login" className={styles.loginButton}>
-              登录
+        <div className={styles.navLeft}>
+          <Link href="/" className={styles.logo}>
+            Move To Learn
+          </Link>
+          {isDashboard && (
+            <Link href="/" className={styles.backHomeButton}>
+              返回首页
             </Link>
+          )}
+        </div>
+        <div className={styles.navCenter}>
+          <Link href="/courses" className={`${styles.navLink} ${router.pathname === '/courses' ? styles.active : ''}`}>
+            课程
+          </Link>
+          <span className={`${styles.navLink} ${styles.disabled}`}>
+            社区
+          </span>
+          <span className={`${styles.navLink} ${styles.disabled}`}>
+            生态系统
+          </span>
+          <Link href="/dashboard" className={`${styles.navLink} ${router.pathname === '/dashboard' ? styles.active : ''}`}>
+            我的学习
+          </Link>
+        </div>
+        <div className={styles.navRight}>
+          {mounted && (
+            <>
+              <Link href="/login" className={styles.loginButton}>
+                连接钱包
+              </Link>
+            </>
           )}
         </div>
       </nav>

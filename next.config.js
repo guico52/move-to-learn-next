@@ -7,6 +7,9 @@ const nextConfig = {
   },
   transpilePackages: ['@monaco-editor/react'],
   postcss: true,
+  images: {
+    domains: ['picsum.photos'],
+  },
 };
 
 module.exports = nextConfig;

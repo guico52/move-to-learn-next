@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import Head from 'next/head';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
+import DashboardTitle from '@/components/DashboardTitle';
 import MovePlayground from '@/components/MovePlayground';
 import styles from '@/styles/Dashboard.module.css';
 
@@ -24,19 +25,9 @@ const PlaygroundPage: NextPage = () => {
       <Sidebar />
 
       <main className={styles.main}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '2rem'
-        }}>
-          <h1 style={{
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            marginBottom: '2rem'
-          }}>
-            Move 代码操场
-          </h1>
-          <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
+        <div className={styles.content}>
+          <DashboardTitle title="Move 代码操场" />
+          <div className={styles.playgroundContainer}>
             <MovePlayground />
           </div>
         </div>

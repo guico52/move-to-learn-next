@@ -61,6 +61,7 @@ interface Course {
   lastStudyTime?: string;
   totalDuration: string;
   completedDuration: string;
+  hasEarnedBadge?: boolean;
 }
 
 const Courses: NextPage = () => {

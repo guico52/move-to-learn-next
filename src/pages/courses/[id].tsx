@@ -6,8 +6,10 @@ import Link from 'next/link';
 import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import CourseBadge from '../../components/CourseBadge';
 import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/Course.module.css';
+import { CourseType } from '@prisma/client';
 
 interface Chapter {
   id: string;
@@ -22,7 +24,7 @@ interface Course {
   title: string;
   description: string;
   image: string | null;
-  type: 'AI' | 'WEB3';
+  type: CourseType;
   chapters: Chapter[];
 }
 
@@ -143,29 +145,45 @@ const CourseDetail: NextPage = () => {
           <div className={styles.courseInfo}>
             <h1>{course.title}</h1>
             <p>{course.description}</p>
-            <div className={styles.courseType}>{course.type === 'AI' ? 'AI' : 'Web3'} 课程</div>
+            <div className={styles.courseType}>{course.type} 课程</div>
           </div>
           
-          {progress && (
-            <div className={styles.progressCard}>
-              <div className={styles.progressTitle}>学习进度</div>
-              <div className={styles.progressBar}>
-                <div 
-                  className={styles.progressFill} 
-                  style={{ width: `${progress.progressPercentage}%` }}
-                ></div>
+          <div className={styles.courseProgress}>
+            {progress && (
+              <div className={styles.progressCard}>
+                <div className={styles.progressTitle}>学习进度</div>
+                <div className={styles.progressBar}>
+                  <div 
+                    className={styles.progressFill} 
+                    style={{ width: `${progress.progressPercentage}%` }}
+                  ></div>
+                </div>
+                <div className={styles.progressStats}>
+                  <div>已完成: {progress.completedCount}/{progress.totalChapters} 章节</div>
+                  <div>{Math.round(progress.progressPercentage)}%</div>
+                </div>
+                {progress.nextChapter && (
+                  <Link href={`/chapters/${progress.nextChapter.id}`} className={styles.continueButton}>
+                    继续学习
+                  </Link>
+                )}
               </div>
-              <div className={styles.progressStats}>
-                <div>已完成: {progress.completedCount}/{progress.totalChapters} 章节</div>
-                <div>{Math.round(progress.progressPercentage)}%</div>
+            )}
+            
+            <div className={styles.badgeContainer}>
+              <div className={styles.badgeWrapper}>
+                <CourseBadge 
+                  type={course.type} 
+                  isEarned={progress?.progressPercentage === 100}
+                  size={80}
+                />
+                <div className={styles.badgeInfo}>
+                  <h3>课程徽章</h3>
+                  <p>{progress?.progressPercentage === 100 ? '恭喜获得课程徽章！' : '完成所有章节即可获得徽章'}</p>
+                </div>
               </div>
-              {progress.nextChapter && (
-                <Link href={`/chapters/${progress.nextChapter.id}`} className={styles.continueButton}>
-                  继续学习
-                </Link>
-              )}
             </div>
-          )}
+          </div>
         </div>
 
         <div className={styles.chaptersContainer}>

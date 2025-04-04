@@ -247,4 +247,39 @@
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: not-allowed;
+}
+
+.courseProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.badgeContainer {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.badgeWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.badgeInfo {
+  flex: 1;
+}
+
+.badgeInfo h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: #1e293b;
+}
+
+.badgeInfo p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.875rem;
 } 

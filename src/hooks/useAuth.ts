@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -11,36 +11,50 @@ export interface User {
   profileId?: string | null;
 }
 
+interface StoredUserData {
+  user: User | null;
+  isFirstLogin: boolean;
+}
+
 export const useAuth = () => {
   const { address, isConnected } = useAccount();
-  const chainId = useChainId();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(() => {
-    // 从localStorage初始化用户状态
+  
+  // 从localStorage初始化状态
+  const [{ user, isFirstLogin }, setState] = useState<StoredUserData>(() => {
     if (typeof window !== 'undefined') {
-      const savedUser = localStorage.getItem('user');
-      return savedUser ? JSON.parse(savedUser) : null;
+      const savedData = localStorage.getItem('userData');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // 只验证钱包地址是否匹配
+        if (parsedData.user && (!address || parsedData.user.walletAddress === address)) {
+          return parsedData;
+        }
+        // 如果钱包地址不匹配，清除存储的数据
+        localStorage.removeItem('userData');
+      }
     }
-    return null;
+    return { user: null, isFirstLogin: false };
   });
+
   const [loading, setLoading] = useState(false);
   const loginAttemptedRef = useRef(false);
   const isAuthenticatingRef = useRef(false);
   
-  // 更新用户状态时同步到localStorage
+  // 更新状态时同步到localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('userData', JSON.stringify({ user, isFirstLogin }));
       } else {
-        localStorage.removeItem('user');
+        localStorage.removeItem('userData');
       }
     }
-  }, [user]);
+  }, [user, isFirstLogin]);
 
   // 处理用户登录
   const handleLogin = async () => {
-    if (!isConnected || !address || !chainId) return;
+    if (!isConnected || !address) return;
 
     // 避免重复请求
     if (loading || isAuthenticatingRef.current) return;
@@ -51,11 +65,13 @@ export const useAuth = () => {
     try {
       const response = await axios.post('/api/auth/login', {
         walletAddress: address,
-        chainId,
       });
 
       if (response.data.success) {
-        setUser(response.data.user);
+        setState({
+          user: response.data.user,
+          isFirstLogin: response.data.isFirstLogin || false
+        });
         loginAttemptedRef.current = true;
 
         // 检查是否有需要重定向的URL
@@ -83,10 +99,10 @@ export const useAuth = () => {
 
   // 重置所有认证状态
   const resetAuthState = () => {
-    setUser(null);
+    setState({ user: null, isFirstLogin: false });
     loginAttemptedRef.current = false;
     isAuthenticatingRef.current = false;
-    localStorage.removeItem('user');
+    localStorage.removeItem('userData');
   };
 
   // 检查钱包地址是否匹配
@@ -101,13 +117,13 @@ export const useAuth = () => {
   useEffect(() => {
     const checkAndLogin = async () => {
       // 只在连接钱包且没有用户信息时尝试登录
-      if (isConnected && address && chainId && !user && !isAuthenticatingRef.current) {
+      if (isConnected && address && !user && !isAuthenticatingRef.current) {
         await handleLogin();
       }
     };
 
     checkAndLogin();
-  }, [isConnected, address, chainId, user]);
+  }, [isConnected, address, user]);
 
   // 当用户断开连接时重置状态
   useEffect(() => {
@@ -119,7 +135,8 @@ export const useAuth = () => {
   return {
     user,
     loading,
-    isLoggedIn: !!user,
+    isLoggedIn: !!user && (!address || user.walletAddress === address),
+    isFirstLogin,
     handleLogin,
   };
 }; 

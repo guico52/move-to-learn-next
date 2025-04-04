@@ -1,21 +1,35 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useAccount } from 'wagmi';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/Dashboard.module.css';
+import { useAuth } from '../../hooks/useAuth';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const { isConnected } = useAccount();
+  const { user, loading, isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    if (!isConnected) {
-      router.push('/login');
-    }
-  }, [isConnected, router]);
+
+  // 在加载状态时显示加载界面
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <Head>
+          <title>加载中 - Move To Learn</title>
+        </Head>
+        <div className={styles.loading}>
+          <span>加载中...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // 未登录时不渲染内容
+  if (!isLoggedIn) {
+    return null;
+  }
 
   return (
     <div className={styles.container}>

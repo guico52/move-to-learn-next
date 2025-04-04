@@ -12,12 +12,6 @@ const PlaygroundPage: NextPage = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
 
-  useEffect(() => {
-    if (!isConnected) {
-      router.push('/login');
-    }
-  }, [isConnected, router]);
-
   console.log('Rendering PlaygroundPage');
   return (
     <div className={styles.container}>

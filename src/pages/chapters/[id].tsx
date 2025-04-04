@@ -33,15 +33,6 @@ const ChapterDetail: NextPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
 
-  // 检查用户登录状态
-  useEffect(() => {
-    if (!isLoggedIn && !user) {
-      // 保存当前URL用于登录后重定向
-      localStorage.setItem('redirectAfterLogin', window.location.pathname);
-      router.push('/login');
-    }
-  }, [isLoggedIn, user, router]);
-
   // 获取章节详情
   useEffect(() => {
     const fetchChapter = async () => {

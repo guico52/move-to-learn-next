@@ -9,9 +9,9 @@ export default async function handler(
     return res.status(405).json({ error: '方法不允许' });
   }
 
-  const { walletAddress, chainId } = req.body;
+  const { walletAddress } = req.body;
 
-  if (!walletAddress || !chainId) {
+  if (!walletAddress) {
     return res.status(400).json({ error: '缺少必要参数' });
   }
 
@@ -19,7 +19,6 @@ export default async function handler(
     // 查找或创建用户
     const result = await findOrCreateUser({
       walletAddress,
-      chainId,
     });
 
     if (!result.success) {
@@ -33,10 +32,10 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       user: {
-        id: result.user.id,
-        walletAddress: result.user.walletAddress,
-        isInitialized: result.user.isInitialized,
-        profileId: result.user.profileId,
+        id: result.user?.id,
+        walletAddress: result.user?.walletAddress,
+        isInitialized: result.user?.isInitialized,
+        profileId: result.user?.profileId,
       },
       isFirstLogin: result.isFirstLogin,
     });

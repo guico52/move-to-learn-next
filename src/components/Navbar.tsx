@@ -15,6 +15,7 @@ import {
   TransactionBuilder
 } from "@aptos-labs/ts-sdk";
 import { aptosConfig } from '@/config';
+import { useAuth } from '../hooks/useAuth';
 
 const navLinks = [
   { href: '/courses', label: '课程' },
@@ -27,7 +28,8 @@ const Navbar = () => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const router = useRouter();
-  const [mounted, setMounted] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -36,6 +38,10 @@ const Navbar = () => {
   const handleDisconnect = async () => {
     await disconnect();
     router.push('/');
+  };
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   const isDashboard = router.pathname.startsWith('/dashboard');
@@ -86,9 +92,20 @@ const Navbar = () => {
         <div className={styles.navRight}>
           {mounted && (
             <>
-              <Link href="/login" className={styles.loginButton}>
-                连接钱包
-              </Link>
+              {isConnected && user ? (
+                <div className={styles.userInfo}>
+                  <span className={styles.walletAddress}>
+                    {formatAddress(user.walletAddress)}
+                  </span>
+                  <button onClick={handleDisconnect} className={styles.logoutButton}>
+                    退出登录
+                  </button>
+                </div>
+              ) : (
+                <Link href="/login" className={styles.loginButton}>
+                  连接钱包
+                </Link>
+              )}
             </>
           )}
         </div>

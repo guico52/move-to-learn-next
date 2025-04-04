@@ -10,6 +10,7 @@ import '../styles/globals.css';
 import { mainnet, sepolia } from 'wagmi/chains';
 import { http } from 'wagmi';
 import { okxWallet } from '@rainbow-me/rainbowkit/wallets';
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
@@ -40,6 +41,10 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
+          <Head>
+            <link rel="icon" href="/assets/aptos.png" />
+            <link rel="apple-touch-icon" href="/assets/aptos.png" />
+          </Head>
           <Component {...pageProps} />
           <Toaster 
             position="top-center"

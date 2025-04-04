@@ -2,12 +2,12 @@
     display: flex;
     flex-direction: column;
     height: calc(100vh - 200px);
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .messagesContainer {
@@ -16,52 +16,212 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: #007AFF #f0f0f0;
+}
+
+.messagesContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messagesContainer::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb {
+    background-color: #007AFF;
+    border-radius: 3px;
 }
 
 .message {
-    max-width: 80%;
-    padding: 12px 16px;
-    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 85%;
     animation: fadeIn 0.3s ease;
+}
+
+.messageAvatar {
+    font-size: 24px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: 50%;
+    margin-top: 4px;
 }
 
 .userMessage {
     align-self: flex-end;
-    background-color: #007AFF;
-    color: white;
+    flex-direction: row-reverse;
 }
 
-.assistantMessage {
-    align-self: flex-start;
-    background-color: #F0F0F0;
-    color: #333333;
+.userMessage .messageAvatar {
+    background: #e3f2fd;
 }
 
 .messageContent {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
 }
 
+/* Markdown 样式 */
+.messageContent :global(p) {
+    margin: 0.5em 0;
+}
+
+.messageContent :global(h1),
+.messageContent :global(h2),
+.messageContent :global(h3),
+.messageContent :global(h4),
+.messageContent :global(h5),
+.messageContent :global(h6) {
+    margin: 1em 0 0.5em;
+    line-height: 1.4;
+}
+
+.messageContent :global(ul),
+.messageContent :global(ol) {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+.messageContent :global(li) {
+    margin: 0.3em 0;
+}
+
+.messageContent :global(a) {
+    color: #007AFF;
+    text-decoration: none;
+}
+
+.messageContent :global(a:hover) {
+    text-decoration: underline;
+}
+
+.messageContent :global(blockquote) {
+    margin: 0.5em 0;
+    padding-left: 1em;
+    border-left: 4px solid #e0e0e0;
+    color: #666;
+}
+
+.messageContent :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 0.5em 0;
+}
+
+.messageContent :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5em 0;
+}
+
+.messageContent :global(th),
+.messageContent :global(td) {
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.messageContent :global(th) {
+    background-color: #f5f5f5;
+}
+
+.codeBlock {
+    margin: 0.5em 0;
+    padding: 12px;
+    background-color: #1e1e1e;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.codeBlock code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #d4d4d4;
+}
+
+.inlineCode {
+    padding: 2px 6px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+}
+
+.userMessage .messageContent {
+    background-color: #007AFF;
+    color: white;
+    border-top-right-radius: 4px;
+}
+
+.userMessage .messageContent :global(a),
+.userMessage .messageContent :global(code) {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.assistantMessage .messageContent {
+    background-color: #f5f5f5;
+    color: #333333;
+    border-top-left-radius: 4px;
+}
+
 .inputForm {
     display: flex;
-    gap: 10px;
-    padding: 20px 0 0 0;
+    gap: 12px;
+    padding: 20px;
+    margin: 0 -20px -20px -20px;
+    background: #f8f9fa;
     border-top: 1px solid #eee;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .input {
     flex-grow: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
     outline: none;
-    transition: border-color 0.3s ease;
+    resize: none;
+    max-height: 150px;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
 }
 
 .input:focus {
     border-color: #007AFF;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+    color: #1a202c;
+}
+
+.input:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #94a3b8;
 }
 
 .submitButton {
@@ -69,19 +229,31 @@
     background-color: #007AFF;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
 }
 
-.submitButton:hover {
+.submitButton:hover:not(:disabled) {
     background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.submitButton:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .submitButton:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+    transform: none;
 }
 
 @keyframes fadeIn {
@@ -92,5 +264,26 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .chatContainer {
+        height: calc(100vh - 150px);
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+
+    .inputForm {
+        padding: 15px;
+    }
+
+    .submitButton {
+        padding: 12px 20px;
+        min-width: 80px;
     }
 } 

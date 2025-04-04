@@ -138,5 +138,6 @@ export const useAuth = () => {
     isLoggedIn: !!user && (!address || user.walletAddress === address),
     isFirstLogin,
     handleLogin,
+    resetAuthState,
   };
 }; 

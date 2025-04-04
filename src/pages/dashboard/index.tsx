@@ -86,8 +86,8 @@ const Dashboard: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>奖励中心 - Move To Learn</title>
-        <meta content="Move To Learn 奖励中心" name="description" />
+        <title>我的信息 - Move To Learn</title>
+        <meta content="Move To Learn 我的信息" name="description" />
       </Head>
 
       <Navbar />
@@ -95,7 +95,7 @@ const Dashboard: NextPage = () => {
 
       <main className={styles.main}>
         <div className={styles.content}>
-          <h1 className={styles.pageTitle}>奖励中心</h1>
+          <h1 className={styles.pageTitle}>我的信息</h1>
           
           <div className={styles.statsContainer}>
             {stats.map((stat, index) => (

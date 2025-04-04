@@ -1,4 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import styles from '../styles/AIChat.module.css';
 
 interface Message {
@@ -6,11 +9,17 @@ interface Message {
     content: string;
 }
 
+const WELCOME_MESSAGE = {
+    role: 'assistant' as const,
+    content: '你好！我是你的AI助教。我可以帮助你解答问题、提供学习建议，让我们开始对话吧！'
+};
+
 const AIChat = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -20,12 +29,31 @@ const AIChat = () => {
         scrollToBottom();
     }, [messages]);
 
+    // 自动调整输入框高度
+    const adjustTextareaHeight = () => {
+        const textarea = inputRef.current;
+        if (textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${Math.min(textarea.scrollHeight, 150)}px`;
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim() || isLoading) return;
 
         const userMessage = input.trim();
         setInput('');
+        if (inputRef.current) {
+            inputRef.current.style.height = 'auto';
+        }
         setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
         setIsLoading(true);
 
@@ -44,6 +72,10 @@ const AIChat = () => {
                     conversation_id: ""
                 })
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             const reader = response.body?.getReader();
             if (!reader) {
@@ -77,9 +109,10 @@ const AIChat = () => {
                                         return [...prev, { role: 'assistant', content: assistantMessage }];
                                     }
                                 });
+                                scrollToBottom();
                             }
                         } catch (e) {
-                            // 忽略非 JSON 数据
+                            console.error('解析响应数据时出错:', e);
                         }
                     }
                 }
@@ -105,25 +138,62 @@ const AIChat = () => {
                             message.role === 'user' ? styles.userMessage : styles.assistantMessage
                         }`}
                     >
+                        <div className={styles.messageAvatar}>
+                            {message.role === 'user' ? '👤' : '🤖'}
+                        </div>
                         <div className={styles.messageContent}>
-                            {message.content}
+                            {message.role === 'user' ? (
+                                message.content
+                            ) : (
+                                <ReactMarkdown 
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeRaw]}
+                                    components={{
+                                        // 自定义代码块样式
+                                        code({node, inline, className, children, ...props}) {
+                                            const match = /language-(\w+)/.exec(className || '');
+                                            return !inline ? (
+                                                <pre className={styles.codeBlock}>
+                                                    <code
+                                                        className={match ? `language-${match[1]}` : ''}
+                                                        {...props}
+                                                    >
+                                                        {String(children).replace(/\n$/, '')}
+                                                    </code>
+                                                </pre>
+                                            ) : (
+                                                <code className={styles.inlineCode} {...props}>
+                                                    {children}
+                                                </code>
+                                            );
+                                        }
+                                    }}
+                                >
+                                    {message.content}
+                                </ReactMarkdown>
+                            )}
                         </div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />
             </div>
             <form onSubmit={handleSubmit} className={styles.inputForm}>
-                <input
-                    type="text"
+                <textarea
+                    ref={inputRef}
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="输入您的问题..."
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                        adjustTextareaHeight();
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="输入您的问题...（按Enter发送，Shift+Enter换行）"
                     disabled={isLoading}
                     className={styles.input}
+                    rows={1}
                 />
                 <button 
                     type="submit" 
-                    disabled={isLoading}
+                    disabled={isLoading || !input.trim()}
                     className={styles.submitButton}
                 >
                     {isLoading ? '发送中...' : '发送'}

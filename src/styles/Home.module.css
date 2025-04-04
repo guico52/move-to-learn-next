@@ -95,30 +95,23 @@
   gap: 1rem;
 }
 
-.address {
-  color: #64748b;
-  font-size: 0.875rem;
+.walletAddress {
+  background: #f3f4f6;
   padding: 0.5rem 1rem;
-  background: #f8fafc;
   border-radius: 0.5rem;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.address:hover {
-  background: #f1f5f9;
-  color: #1e3a8a;
+  font-size: 0.875rem;
+  color: #374151;
 }
 
 .logoutButton {
   background: #ef4444;
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
   border: none;
   cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
 }
 
 .logoutButton:hover {

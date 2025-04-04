@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css';
+import Image from 'next/image';
 import { 
   Account, 
   Aptos, 
@@ -53,7 +54,16 @@ const Navbar = () => {
       <header className={styles.header}>
         <nav className={styles.nav}>
           <Link href="/" className={styles.logo}>
-            Move To Learn
+            <Image
+              src="/assets/logo.png"
+              alt="Move To Learn Logo"
+              width={300}
+              height={100}
+              style={{ width: 'auto', height: '40px' }}
+              className="object-contain"
+              quality={100}
+              priority
+            />
           </Link>
           <div className={styles.navRight}>
             <div className={styles.placeholder}></div>
@@ -68,7 +78,16 @@ const Navbar = () => {
       <nav className={styles.nav}>
         <div className={styles.navLeft}>
           <Link href="/" className={styles.logo}>
-            Move To Learn
+            <Image
+              src="/assets/logo.png"
+              alt="Move To Learn Logo"
+              width={300}
+              height={100}
+              style={{ width: 'auto', height: '60px' }}
+              className="object-contain"
+              quality={100}
+              priority
+            />
           </Link>
           {isDashboard && (
             <Link href="/" className={styles.backHomeButton}>

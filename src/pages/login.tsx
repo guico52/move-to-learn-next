@@ -10,27 +10,25 @@ import { useAuth } from '../hooks/useAuth';
 const Login: NextPage = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
-  const { user, loading, error, isInitializing } = useAuth();
+  const { user, loading, isLoggedIn } = useAuth();
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
 
   // 监听登录状态变化
   useEffect(() => {
-    if (error) {
-      setLoginStatus(`登录失败: ${error}`);
-    } else if (isInitializing) {
-      setLoginStatus('正在初始化学习档案...');
+    if (isLoggedIn) {
+      setLoginStatus('登录成功');
     } else if (loading) {
       setLoginStatus('正在登录...');
     } else if (!isConnected) {
       setLoginStatus(null);
-    } else if (isConnected && !loading && !error) {
+    } else if (isConnected && !loading) {
       setLoginStatus('正在验证用户信息...');
     }
-  }, [error, loading, isInitializing, isConnected]);
+  }, [isLoggedIn, loading, isConnected]);
 
   // 登录成功后的重定向
   useEffect(() => {
-    if (user && !isInitializing) {
+    if (user && !loading) {
       const redirectUrl = localStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         localStorage.removeItem('redirectAfterLogin');
@@ -39,7 +37,7 @@ const Login: NextPage = () => {
         router.push('/dashboard');
       }
     }
-  }, [user, isInitializing, router]);
+  }, [user, isLoggedIn, router]);
 
   return (
     <div className={styles.container}>

@@ -57,9 +57,11 @@ export const findOrCreateUser = async (userData: UserData): Promise<{
         lastLogin: new Date(),
         isInitialized: false,
       };
-
       user = await prisma.user.create({
-        data: createData,
+        data: {
+          ...createData,
+          chainId: 1, // 添加默认的chainId
+        },
       });
 
       return {

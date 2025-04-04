@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getAllCourses, getCoursesByType } from '../../../utils/courseService';
+import { getAllCourses, getCoursesByType } from '../../../services/courseService';
 
 export default async function handler(
   req: NextApiRequest,

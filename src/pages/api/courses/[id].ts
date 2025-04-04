@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getCourseById } from '../../../utils/courseService';
+import { getCourseById } from '../../../services/courseService';
 
 export default async function handler(
   req: NextApiRequest,

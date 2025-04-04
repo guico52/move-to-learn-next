@@ -58,6 +58,12 @@ const AIChat = () => {
         setIsLoading(true);
 
         try {
+            // 准备对话历史
+            const conversationHistory = messages.map(msg => ({
+                role: msg.role,
+                content: msg.content
+            }));
+
             const response = await fetch('https://api.dify.ai/v1/chat-messages', {
                 method: 'POST',
                 headers: {
@@ -69,7 +75,8 @@ const AIChat = () => {
                     inputs: {},
                     response_mode: "streaming",
                     user: "user_001",
-                    conversation_id: ""
+                    conversation_id: "",
+                    conversation_history: conversationHistory
                 })
             });
 
@@ -149,10 +156,10 @@ const AIChat = () => {
                                     remarkPlugins={[remarkGfm]}
                                     rehypePlugins={[rehypeRaw]}
                                     components={{
-                                        // 自定义代码块样式
-                                        code({node, inline, className, children, ...props}) {
+                                        code: ({ className, children, ...props }: any) => {
                                             const match = /language-(\w+)/.exec(className || '');
-                                            return !inline ? (
+                                            const isInline = !className;
+                                            return !isInline ? (
                                                 <pre className={styles.codeBlock}>
                                                     <code
                                                         className={match ? `language-${match[1]}` : ''}

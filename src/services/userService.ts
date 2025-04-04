@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from '@/utils/prisma';
 import type { User } from '@prisma/client';
 
 const NETWORK = process.env.NEXT_PUBLIC_NETWORK || 'testnet';

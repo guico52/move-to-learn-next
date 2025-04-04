@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from '@/utils/prisma';
 import { CourseType } from '@prisma/client';
 
 // 获取所有课程

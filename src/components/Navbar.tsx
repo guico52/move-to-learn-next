@@ -7,12 +7,8 @@ import {
   Account, 
   Aptos, 
   AptosConfig, 
-  Network, 
   Ed25519PrivateKey, 
   InputViewFunctionData,
-  AccountAddress,
-  InputEntryFunctionData,
-  TransactionBuilder
 } from "@aptos-labs/ts-sdk";
 import { aptosConfig } from '@/config';
 import { useAuth } from '../hooks/useAuth';
@@ -29,15 +25,20 @@ const Navbar = () => {
   const { disconnect } = useDisconnect();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, loading, resetAuthState } = useAuth();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleDisconnect = async () => {
-    await disconnect();
-    router.push('/');
+    try {
+      await disconnect();
+      resetAuthState();
+      router.push('/');
+    } catch (error) {
+      console.error('退出登录失败:', error);
+    }
   };
 
   const formatAddress = (address: string) => {
@@ -129,62 +130,62 @@ export const createAccount = async (privateKeyHex?: string) => {
   return Account.generate();
 };
 
-// 初始化学生档案
-export const initializeStudent = async (account: Account) => {
-  try {
-    const builder = new TransactionBuilder(aptos);
-    const rawTxn = await builder.build({
-      sender: AccountAddress.from(account.accountAddress),
-      data: {
-        function: `${aptosConfig.contract.address}::${aptosConfig.contract.moduleName}::initialize_student`,
-        typeArguments: [],
-        functionArguments: []
-      }
-    });
+// // 初始化学生档案
+// export const initializeStudent = async (account: Account) => {
+//   try {
+//     const builder = new TransactionBuilder(aptos);
+//     const rawTxn = await builder.build({
+//       sender: AccountAddress.from(account.accountAddress),
+//       data: {
+//         function: `${aptosConfig.contract.address}::${aptosConfig.contract.moduleName}::initialize_student`,
+//         typeArguments: [],
+//         functionArguments: []
+//       }
+//     });
 
-    const signedTxn = await builder.sign({ signer: account, transaction: rawTxn });
-    const pendingTxn = await aptos.transaction.submit({ transaction: signedTxn });
+//     const signedTxn = await builder.sign({ signer: account, transaction: rawTxn });
+//     const pendingTxn = await aptos.transaction.submit({ transaction: signedTxn });
     
-    return pendingTxn;
-  } catch (error) {
-    console.error("初始化学生档案失败:", error);
-    throw error;
-  }
-};
+//     return pendingTxn;
+//   } catch (error) {
+//     console.error("初始化学生档案失败:", error);
+//     throw error;
+//   }
+// };
 
 // 颁发证书
-export const issueCertificate = async (
-  adminAccount: Account,
-  studentAddress: string,
-  courseId: string,
-  certificateHash: Uint8Array,
-  credits: number
-) => {
-  try {
-    const builder = new TransactionBuilder(aptos);
-    const rawTxn = await builder.build({
-      sender: AccountAddress.from(adminAccount.accountAddress),
-      data: {
-        function: `${aptosConfig.contract.address}::${aptosConfig.contract.moduleName}::issue_certificate`,
-        typeArguments: [],
-        functionArguments: [
-          studentAddress,
-          courseId,
-          Array.from(certificateHash),
-          credits,
-        ]
-      }
-    });
+// export const issueCertificate = async (
+//   adminAccount: Account,
+//   studentAddress: string,
+//   courseId: string,
+//   certificateHash: Uint8Array,
+//   credits: number
+// ) => {
+//   try {
+//     const builder = new TransactionBuilder(aptos);
+//     const rawTxn = await builder.build({
+//       sender: AccountAddress.from(adminAccount.accountAddress),
+//       data: {
+//         function: `${aptosConfig.contract.address}::${aptosConfig.contract.moduleName}::issue_certificate`,
+//         typeArguments: [],
+//         functionArguments: [
+//           studentAddress,
+//           courseId,
+//           Array.from(certificateHash),
+//           credits,
+//         ]
+//       }
+//     });
 
-    const signedTxn = await builder.sign({ signer: adminAccount, transaction: rawTxn });
-    const pendingTxn = await aptos.transaction.submit({ transaction: signedTxn });
+//     const signedTxn = await builder.sign({ signer: adminAccount, transaction: rawTxn });
+//     const pendingTxn = await aptos.transaction.submit({ transaction: signedTxn });
     
-    return pendingTxn;
-  } catch (error) {
-    console.error("颁发证书失败:", error);
-    throw error;
-  }
-};
+//     return pendingTxn;
+//   } catch (error) {
+//     console.error("颁发证书失败:", error);
+//     throw error;
+//   }
+// };
 
 // 查询学生证书
 export const getCertificates = async (studentAddress: string) => {

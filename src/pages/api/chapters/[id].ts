@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getChapterById, canAccessChapter } from '../../../utils/courseService';
+import { getChapterById, canAccessChapter } from '../../../services/courseService';
 
 export default async function handler(
   req: NextApiRequest,

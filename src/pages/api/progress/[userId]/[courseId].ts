@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUserCourseProgress } from '../../../../utils/courseService';
+import { getUserCourseProgress } from '../../../../services/courseService';
 
 export default async function handler(
   req: NextApiRequest,

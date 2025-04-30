@@ -31,8 +31,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/move-to-learn-next:latest
-
-      如需自动部署到服务器，可加 SSH 步骤
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:

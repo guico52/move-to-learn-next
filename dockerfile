@@ -1,14 +1,25 @@
-# 选择官方 Node 镜像
 FROM node:20-bullseye
 
-# 安装 Rust（用于编译 Move）
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# 安装 Rust 及 Move CLI 所需依赖
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      clang \
+      libssl-dev \
+      pkg-config \
+      git \
+      curl \
+      ca-certificates
+
+# 安装 Rust（nightly 版，Move 推荐）
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# 安装 Move CLI
+# 克隆 Move 源码并安装 move-cli
 RUN git clone https://github.com/move-language/move.git /move-source \
     && cd /move-source \
-    && cargo install --path language/tools/move-cli
+    && git checkout main \
+    && cargo +nightly install --path language/tools/move-cli
 
 # 创建工作目录
 WORKDIR /app

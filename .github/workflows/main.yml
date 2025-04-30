@@ -37,6 +37,6 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
+          script: 
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/move-to-learn-next:latest
             docker-compose up -d

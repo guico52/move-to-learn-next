@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            cd /path/to/your/project && \
+            cd /www/move-to-learn-next && \
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/move-to-learn-next:latest && \
             docker-compose down && \
             docker-compose up -d

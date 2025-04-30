@@ -31,15 +31,26 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/move-to-learn-next:latest
+
+      # 先将 docker-compose.yml 复制到服务器
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/path/to/your/project"
+
+      # 然后执行部署
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
           script: |
-            cd /www/move-to-learn-next && \
+            cd /path/to/your/project && \
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/move-to-learn-next:latest && \
-            docker-compose down && \
+            docker-compose down || true && \
             docker-compose up -d

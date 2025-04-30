@@ -32,4 +32,5 @@ RUN pnpm build
 EXPOSE 3000
 
 # 启动服务
+
 CMD ["pnpm", "start"]

@@ -35,7 +35,8 @@ RUN pnpm install
 
 # 复制项目文件
 COPY . .
-
+# 生成 Prisma 客户端
+RUN npx prisma generate
 # 构建 Next.js
 RUN pnpm build
 

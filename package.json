@@ -38,6 +38,7 @@
     "@types/react": "^19.0.6",
     "autoprefixer": "^10.4.21",
     "eslint-config-next": "^15.1.7",
+    "husky": "^9.1.7",
     "postcss": "^8.5.3",
     "postcss-preset-env": "^10.1.5",
     "tailwindcss": "^4.1.1",

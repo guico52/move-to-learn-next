@@ -113,3 +113,6 @@ pnpm dev
 - [x] 完成AI内容接入
 - [x] 完成move操场
 
+github地址：[guico52/move-to-learn-next](https://github.com/guico52/move-to-learn-next?tab=readme-ov-file#架构概览)
+
+部署地址：https://move-to-learn-next-xlaz.vercel.app

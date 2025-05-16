@@ -1,3 +1,5 @@
+import type {Dynamic_Chapter} from './';
+
 /**
  * <p>
  *  Course
@@ -34,4 +36,5 @@ export interface Dynamic_Course {
      * updatedAt
      */
     readonly updatedAt?: string;
+    readonly chapters?: ReadonlyArray<Dynamic_Chapter>;
 }

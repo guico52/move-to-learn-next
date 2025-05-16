@@ -1,4 +1,4 @@
-import type {Dynamic_Course} from './';
+import type {Dynamic_Course, Dynamic_UserProgress} from './';
 
 /**
  * <p>
@@ -46,4 +46,5 @@ export interface Dynamic_Chapter {
      * updatedAt
      */
     readonly updatedAt?: string;
+    readonly progress?: Dynamic_UserProgress | undefined;
 }

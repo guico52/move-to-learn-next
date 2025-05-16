@@ -8,6 +8,7 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/Chapter.module.css';
 import { useAuthStore } from '@/store/authStore';
+import { api } from '@/utils/executor';
 
 interface Chapter {
   id: string;
@@ -35,12 +36,10 @@ const ChapterPage: NextPage = () => {
       if (!id || !walletAddress) return;
 
       try {
-        const response = await axios.get(`/api/chapters/${id}`, {
-          headers: {
-            'wallet-address': walletAddress
-          }
+        const response = await api.chapterController.getChapterById({
+          id: id as string
         });
-        setChapter(response.data);
+        setChapter(response.data.data);
       } catch (error) {
         console.error('Error fetching chapter:', error);
       }
@@ -66,9 +65,13 @@ const ChapterPage: NextPage = () => {
           <div className={styles.chapterContent}>
             {chapter.content}
           </div>
-          {chapter.nextChapterId && (
+          {chapter.nextChapterId ? (
             <Link href={`/chapters/${chapter.nextChapterId}`}>
               <button className={styles.nextButton}>下一章</button>
+            </Link>
+          ) : (
+            <Link href={`/courses/${chapter.courseId}`}>
+              <button className={styles.nextButton}>返回课程</button>
             </Link>
           )}
         </main>

@@ -1,27 +1,25 @@
 import type {Executor} from '../';
-import type {MoveController_CompileDto} from '../model/static/';
+import type {
+    ApiResponse, 
+    Mono, 
+    MoveController_CompileDto, 
+    MoveController_CompileResponse
+} from '../model/static/';
 
 export class MoveController {
     
     constructor(private executor: Executor) {}
     
     readonly compile: (options: MoveControllerOptions['compile']) => Promise<
-        string
+        Mono<ApiResponse<MoveController_CompileResponse>>
     > = async(options) => {
         let _uri = '/api/move/compile';
-        let _separator = _uri.indexOf('?') === -1 ? '?' : '&';
-        let _value: any = undefined;
-        _value = options.param.code;
-        _uri += _separator
-        _uri += 'code='
-        _uri += encodeURIComponent(_value);
-        _separator = '&';
-        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<string>;
+        return (await this.executor({uri: _uri, method: 'POST', body: options.body})) as Promise<Mono<ApiResponse<MoveController_CompileResponse>>>;
     }
 }
 
 export type MoveControllerOptions = {
     'compile': {
-        readonly param: MoveController_CompileDto
+        readonly body: MoveController_CompileDto
     }
 }

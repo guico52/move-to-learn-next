@@ -38,7 +38,6 @@ const Login: NextPage = () => {
               
               // 设置 cookie，添加更多安全选项
               const cookieValue = encodeURIComponent(tokenValue);
-              document.cookie = `auth-token=${cookieValue}; path=/; max-age=2592000; SameSite=Lax; domain=${window.location.hostname}`;
               console.log('登录成功，设置cookie:', tokenValue);
 
               useAuthStore.setState({

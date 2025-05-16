@@ -1,0 +1,2 @@
+export interface Mono<T> {
+}

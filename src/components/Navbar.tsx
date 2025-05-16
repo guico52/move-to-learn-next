@@ -12,7 +12,7 @@ import {
   InputViewFunctionData,
 } from "@aptos-labs/ts-sdk";
 import { aptosConfig } from '@/config';
-import { useAuth } from '../hooks/useAuth';
+
 
 const navLinks = [
   { href: '/courses', label: '课程' },
@@ -26,7 +26,7 @@ const Navbar = () => {
   const { disconnect } = useDisconnect();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const { user, loading, resetAuthState } = useAuth();
+
 
   useEffect(() => {
     setMounted(true);
@@ -35,7 +35,6 @@ const Navbar = () => {
   const handleDisconnect = async () => {
     try {
       await disconnect();
-      resetAuthState();
       router.push('/');
     } catch (error) {
       console.error('退出登录失败:', error);

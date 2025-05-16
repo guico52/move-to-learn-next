@@ -11,7 +11,7 @@ import Image from 'next/image';
 const Login: NextPage = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
-  const { user, loading, isLoggedIn } = useAuth();
+  const { walletAddress, tokenName, tokenValue, loading, isLoggedIn } = useAuth();
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
 
   // 监听登录状态变化
@@ -29,7 +29,7 @@ const Login: NextPage = () => {
 
   // 登录成功后的重定向
   useEffect(() => {
-    if (user && !loading) {
+    if (walletAddress && !loading) {
       const redirectUrl = localStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         localStorage.removeItem('redirectAfterLogin');

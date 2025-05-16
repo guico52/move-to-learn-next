@@ -49,13 +49,10 @@ const CourseDetail: NextPage = () => {
   useEffect(() => {
     const fetchCourseAndProgress = async () => {
       if (!id || !user) return;
-
       try {
         setLoading(true);
-        
         // 获取课程详情
         const courseResponse = await axios.get(`/api/courses/${id}`);
-        
         if (courseResponse.data.success) {
           setCourse(courseResponse.data.course);
           

@@ -5,40 +5,61 @@ import { useAccount } from 'wagmi';
 import { useEffect, useState } from 'react';
 import WalletConnect from '../components/WalletConnect';
 import styles from '../styles/Login.module.css';
-import { useAuth } from '../hooks/useAuth';
 import Image from 'next/image';
+import { useAuthStore } from '@/store/authStore';
+import { api } from '@/utils/executor';
 
 const Login: NextPage = () => {
   const router = useRouter();
-  const { isConnected } = useAccount();
-  const { walletAddress, tokenName, tokenValue, loading, isLoggedIn } = useAuth();
-  const [loginStatus, setLoginStatus] = useState<string | null>(null);
+  const { address, isConnected } = useAccount();
+  const { isLoggedIn } = useAuthStore();
 
-  // 监听登录状态变化
-  useEffect(() => {
-    if (isLoggedIn) {
-      setLoginStatus('登录成功');
-    } else if (loading) {
-      setLoginStatus('正在登录...');
-    } else if (!isConnected) {
-      setLoginStatus(null);
-    } else if (isConnected && !loading) {
-      setLoginStatus('正在验证用户信息...');
-    }
-  }, [isLoggedIn, loading, isConnected]);
 
-  // 登录成功后的重定向
   useEffect(() => {
-    if (walletAddress && !loading) {
-      const redirectUrl = localStorage.getItem('redirectAfterLogin');
-      if (redirectUrl) {
-        localStorage.removeItem('redirectAfterLogin');
-        router.push(redirectUrl);
+    if (isConnected) {
+      if (isLoggedIn) {
+        // 获取重定向地址或默认跳转到 dashboard
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectPath = urlParams.get('redirect') || '/dashboard';
+        router.push(redirectPath);
       } else {
-        router.push('/dashboard');
+        // 如果没有登录，获取钱包地址 
+        if (address) {
+          api.authController.login({
+            body: {
+              walletAddress: address,
+            },
+          }).then((res: any) => {
+            if (res.data?.success) {
+              const data = res.data?.data;
+              const walletAddress = address;
+              const tokenName = data.tokenName;
+              const tokenValue = data.tokenValue;
+              
+              // 设置 cookie，添加更多安全选项
+              const cookieValue = encodeURIComponent(tokenValue);
+              document.cookie = `auth-token=${cookieValue}; path=/; max-age=2592000; SameSite=Lax; domain=${window.location.hostname}`;
+              console.log('登录成功，设置cookie:', tokenValue);
+
+              useAuthStore.setState({
+                walletAddress,
+                tokenName,
+                tokenValue,
+                isLoggedIn: true,
+              });
+
+              // 获取重定向地址或默认跳转到 dashboard
+              const urlParams = new URLSearchParams(window.location.search);
+              const redirectPath = urlParams.get('redirect') || '/dashboard';
+              router.push(redirectPath);
+            }
+          }).catch(error => {
+            console.error('登录失败:', error);
+          });
+        }
       }
     }
-  }, [user, isLoggedIn, router]);
+  }, [isConnected, router, address, isLoggedIn]);
 
   return (
     <div className={styles.container}>
@@ -79,11 +100,11 @@ const Login: NextPage = () => {
           </div>
 
 
-          {loginStatus && (
+          {/* {loginStatus && (
             <div className={styles.statusMessage}>
               {loginStatus}
             </div>
-          )}
+          )} */}
 
           <div className={styles.connectWrapper}>
             <WalletConnect />

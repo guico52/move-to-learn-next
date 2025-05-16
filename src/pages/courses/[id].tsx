@@ -7,7 +7,6 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import CourseBadge from '../../components/CourseBadge';
-import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/Course.module.css';
 import { CourseType } from '@prisma/client';
 
@@ -39,7 +38,6 @@ interface Progress {
 const CourseDetail: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { user, isLoggedIn } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,7 +46,7 @@ const CourseDetail: NextPage = () => {
   // 获取课程详情和学习进度
   useEffect(() => {
     const fetchCourseAndProgress = async () => {
-      if (!id || !user) return;
+      if (!id) return;
       try {
         setLoading(true);
         // 获取课程详情
@@ -57,7 +55,7 @@ const CourseDetail: NextPage = () => {
           setCourse(courseResponse.data.course);
           
           // 获取学习进度
-          const progressResponse = await axios.get(`/api/progress/${user.id}/${id}`);
+          const progressResponse = await axios.get(`/api/progress/${getWalletAddress()}/${id}`);
           
           if (progressResponse.data.success) {
             setProgress(progressResponse.data.progress);

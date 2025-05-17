@@ -1,4 +1,5 @@
-address 0x113a5836d6b3168e72e7ababe340ad91518ae6609a0499b3e5648388f949f058 {
+// address 0x113a5836d6b3168e72e7ababe340ad91518ae6609a0499b3e5648388f949f058 {
+address 0xf713e12afbb5d65893a2b1499e9893e853cb111d5bf1693148c8ee75cb2618fa {
 module certificates {
     use std::signer;
     use std::string;
@@ -86,7 +87,8 @@ module certificates {
     
     // Admin check
     fun is_admin(addr: address): bool {
-        addr == @move_to_learn_nft
+        // addr == @move_to_learn_nft
+        addr == @default
     }
 }
 }

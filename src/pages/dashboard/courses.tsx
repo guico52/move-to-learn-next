@@ -11,6 +11,8 @@ import DashboardTitle from '../../components/DashboardTitle';
 import styles from '../../styles/DashboardCourses.module.css';
 import { FiBook, FiClock, FiStar, FiUsers } from 'react-icons/fi';
 import { api } from '@/utils/executor';
+import { Dynamic_Course } from '@/api/model/dynamic';
+import { CourseDto } from '@/api/model/dto';
 
 // 课程分类数据
 const courseCategories = [
@@ -49,24 +51,9 @@ interface Chapter {
   order: number;
 }
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  image: string | null;
-  type: string;
-  difficulty: string;
-  chapters: Chapter[];
-  progress: number;
-  lastStudyTime?: string;
-  totalDuration: string;
-  completedDuration: string;
-  hasEarnedBadge?: boolean;
-}
-
 const Courses: NextPage = () => {
   const router = useRouter();
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseDto['CourseController/COURSE'][]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,10 +70,7 @@ const Courses: NextPage = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await api.courseController.getAllCourses({
-        type: ''
-      });
-      
+      const response = await api.courseController.getPrivateCourses();
       if (response.data.success) {
         setCourses(response.data.data);
       }
@@ -101,35 +85,34 @@ const Courses: NextPage = () => {
 
   // 过滤课程
   const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === 'all' || course.type === activeCategory;
-    const matchesDifficulty = selectedFilters.difficulty === '全部' || course.difficulty === selectedFilters.difficulty;
     
     let matchesStatus = true;
     if (selectedFilters.status !== '全部') {
       if (selectedFilters.status === '已完成') {
-        matchesStatus = course.progress === 100;
+        matchesStatus = course.courseLength === course.userProgressLength;
       } else if (selectedFilters.status === '进行中') {
-        matchesStatus = course.progress > 0 && course.progress < 100;
+        matchesStatus = course.courseLength > course.userProgressLength;
       } else {
-        matchesStatus = course.progress === 0;
+        matchesStatus = course.userProgressLength === 0;
       }
     }
     
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesStatus;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   // 排序课程
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     switch (selectedFilters.sort) {
       case '完成度高':
-        return b.progress - a.progress;
+        return b.userProgressLength - a.userProgressLength;
       case '完成度低':
-        return a.progress - b.progress;
+        return a.userProgressLength - b.userProgressLength;
       case '最近学习':
       default:
-        return new Date(b.lastStudyTime || 0).getTime() - new Date(a.lastStudyTime || 0).getTime();
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
     }
   });
 
@@ -223,19 +206,19 @@ const Courses: NextPage = () => {
                       <div className={styles.courseType} style={{
                         backgroundColor: courseTypeColors[course.type] || '#6b7280'
                       }}>
-                        {courseCategories.find(cat => cat.id === course.type)?.name || course.type}
+                        {/* {courseCategories.find(cat => cat.id === course.type)?.name || course.type} */}
                       </div>
                       <div className={styles.progressBadge} style={{
-                        background: course.progress === 100 
+                        background: course.userProgressLength === course.courseLength
                           ? '#10b981' 
-                          : course.progress > 0 
+                          : course.userProgressLength > 0 
                             ? '#3b82f6' 
                             : '#6b7280'
                       }}>
-                        {course.progress === 100 
+                        {course.userProgressLength === course.courseLength 
                           ? '已完成' 
-                          : course.progress > 0 
-                            ? `${course.progress}%` 
+                          : course.userProgressLength > 0 
+                            ? `${course.userProgressLength}%` 
                             : '未开始'
                         }
                       </div>
@@ -246,22 +229,18 @@ const Courses: NextPage = () => {
                       <div className={styles.courseMeta}>
                         <div className={styles.metaItem}>
                           <FiBook className={styles.icon} />
-                          <span>{course.chapters.length} 章节</span>
+                          <span>{course.courseLength} 章节</span>
                         </div>
                         <div className={styles.metaItem}>
                           <FiClock className={styles.icon} />
-                          <span>{course.completedDuration}/{course.totalDuration}</span>
+                          <span>{course.userProgressLength}/{course.courseLength}</span>
                         </div>
-                        {course.lastStudyTime && (
-                          <div className={styles.lastStudy}>
-                            上次学习：{new Date(course.lastStudyTime).toLocaleDateString()}
-                          </div>
-                        )}
+
                       </div>
                       <div className={styles.progressBar}>
                         <div 
                           className={styles.progressFill} 
-                          style={{ width: `${course.progress}%` }}
+                          style={{ width: `${course.userProgressLength / course.courseLength * 100}%` }}
                         />
                       </div>
                     </div>

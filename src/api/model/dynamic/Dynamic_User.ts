@@ -1,3 +1,5 @@
+import type {Dynamic_UserCourseBuy} from './';
+
 /**
  * <p>
  *  User
@@ -42,4 +44,5 @@ export interface Dynamic_User {
      * walletAddress
      */
     readonly walletAddress?: string;
+    readonly courseBuy?: ReadonlyArray<Dynamic_UserCourseBuy>;
 }

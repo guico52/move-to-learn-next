@@ -29,6 +29,19 @@
   transition: transform 0.3s ease;
 }
 
+.courseType {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 10;
+}
+
 .card:hover .image {
   transform: scale(1.05);
 }
@@ -167,4 +180,51 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.purchaseButton {
+  padding: 0.5rem 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.purchaseButton:hover {
+  background-color: #45a049;
+}
+
+.purchaseButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.purchaseLoading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.purchaseLoading span {
+  margin-left: 0.25rem;
+}
+
+.purchaseStatus {
+  padding: 0.5rem 1rem;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 4px;
+  font-size: 0.875rem;
 } 

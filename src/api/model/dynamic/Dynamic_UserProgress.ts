@@ -15,7 +15,9 @@ export interface Dynamic_UserProgress {
     /**
      * userId
      */
+    readonly userId?: string;
     readonly user?: Dynamic_User;
+    readonly courseId?: string;
     /**
      * courseId
      */

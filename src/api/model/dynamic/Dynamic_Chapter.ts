@@ -1,3 +1,4 @@
+import type {ChapterTypeEnum} from '../enums/';
 import type {Dynamic_Course, Dynamic_UserProgress} from './';
 
 /**
@@ -47,4 +48,5 @@ export interface Dynamic_Chapter {
      */
     readonly updatedAt?: string;
     readonly progress?: Dynamic_UserProgress | undefined;
+    readonly type?: ChapterTypeEnum | undefined;
 }

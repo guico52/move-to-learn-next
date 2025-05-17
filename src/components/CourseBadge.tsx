@@ -1,16 +1,16 @@
 import React from 'react';
-import { CourseType } from '@prisma/client';
+import { CourseTypeDto } from '@/api/model/dto';
 import { FiAward, FiCode, FiDatabase, FiLock, FiShield, FiStar, FiTrendingUp } from 'react-icons/fi';
 import styles from '../styles/CourseBadge.module.css';
 
 interface CourseBadgeProps {
-  type: CourseType;
+  type: CourseTypeDto['CourseController/COURSE_TYPE'];
   isEarned: boolean;
   size?: number;
 }
 
 // 课程类型对应的图标和颜色
-const badgeConfig: Record<CourseType, { icon: React.ElementType; color: string }> = {
+const badgeConfig: Record<CourseTypeDto['CourseController/COURSE_TYPE']['name'], { icon: React.ElementType; color: string }> = {
   AI: { icon: FiDatabase, color: '#10b981' },
   WEB3: { icon: FiCode, color: '#3b82f6' },
   MOVE: { icon: FiStar, color: '#8b5cf6' },
@@ -21,7 +21,7 @@ const badgeConfig: Record<CourseType, { icon: React.ElementType; color: string }
 };
 
 const CourseBadge: React.FC<CourseBadgeProps> = ({ type, isEarned, size = 64 }) => {
-  const config = badgeConfig[type];
+  const config = badgeConfig[type.name];
   const Icon = config.icon;
 
   return (

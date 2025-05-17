@@ -1,13 +1,21 @@
 import type {Executor} from '../';
-import type {Dynamic_Course} from '../model/dynamic/';
+import type {CourseDto, CourseTypeDto} from '../model/dto/';
 import type {ApiResponse, Mono} from '../model/static/';
 
 export class CourseController {
     
     constructor(private executor: Executor) {}
     
+    readonly buyCourse: (options: CourseControllerOptions['buyCourse']) => Promise<
+        Mono<ApiResponse<CourseDto['CourseController/COURSE_WITH_CHAPTER']>>
+    > = async(options) => {
+        let _uri = '/api/courses/buy/';
+        _uri += encodeURIComponent(options.id);
+        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<CourseDto['CourseController/COURSE_WITH_CHAPTER']>>>;
+    }
+    
     readonly getAllCourses: (options: CourseControllerOptions['getAllCourses']) => Promise<
-        Mono<ApiResponse<ReadonlyArray<Dynamic_Course>>>
+        Mono<ApiResponse<ReadonlyArray<CourseDto['CourseController/COURSE']>>>
     > = async(options) => {
         let _uri = '/api/courses';
         let _separator = _uri.indexOf('?') === -1 ? '?' : '&';
@@ -17,15 +25,29 @@ export class CourseController {
         _uri += 'type='
         _uri += encodeURIComponent(_value);
         _separator = '&';
-        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<ReadonlyArray<Dynamic_Course>>>>;
+        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<ReadonlyArray<CourseDto['CourseController/COURSE']>>>>;
     }
     
     readonly getCourseById: (options: CourseControllerOptions['getCourseById']) => Promise<
-        Mono<ApiResponse<Dynamic_Course | undefined>>
+        Mono<ApiResponse<CourseDto['CourseController/COURSE_DETAIL']>>
     > = async(options) => {
         let _uri = '/api/courses/';
         _uri += encodeURIComponent(options.id);
-        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<Dynamic_Course | undefined>>>;
+        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<CourseDto['CourseController/COURSE_DETAIL']>>>;
+    }
+    
+    readonly getCourseTypes: () => Promise<
+        Mono<ApiResponse<ReadonlyArray<CourseTypeDto['CourseController/COURSE_TYPE']>>>
+    > = async() => {
+        let _uri = '/api/courses/types';
+        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<ReadonlyArray<CourseTypeDto['CourseController/COURSE_TYPE']>>>>;
+    }
+    
+    readonly getPrivateCourses: () => Promise<
+        Mono<ApiResponse<ReadonlyArray<CourseDto['CourseController/COURSE']>>>
+    > = async() => {
+        let _uri = '/api/courses/private-courses';
+        return (await this.executor({uri: _uri, method: 'GET'})) as Promise<Mono<ApiResponse<ReadonlyArray<CourseDto['CourseController/COURSE']>>>>;
     }
 }
 
@@ -35,5 +57,10 @@ export type CourseControllerOptions = {
     }, 
     'getCourseById': {
         readonly id: string
-    }
+    }, 
+    'buyCourse': {
+        readonly id: string
+    }, 
+    'getPrivateCourses': {}, 
+    'getCourseTypes': {}
 }

@@ -1,4 +1,9 @@
-import type {Dynamic_Chapter} from './';
+import type {
+    Dynamic_Chapter, 
+    Dynamic_CourseType, 
+    Dynamic_UserCourseBuy, 
+    Dynamic_UserProgress
+} from './';
 
 /**
  * <p>
@@ -25,10 +30,6 @@ export interface Dynamic_Course {
      */
     readonly image?: string | undefined;
     /**
-     * type
-     */
-    readonly type?: string;
-    /**
      * createdAt
      */
     readonly createdAt?: string;
@@ -36,5 +37,15 @@ export interface Dynamic_Course {
      * updatedAt
      */
     readonly updatedAt?: string;
+    readonly price?: number;
+    /**
+     * type
+     */
+    readonly type?: Dynamic_CourseType | undefined;
     readonly chapters?: ReadonlyArray<Dynamic_Chapter>;
+    readonly userCourseBuy?: ReadonlyArray<Dynamic_UserCourseBuy>;
+    readonly userProgress?: ReadonlyArray<Dynamic_UserProgress>;
+    readonly courseLength?: number;
+    readonly userProgressLength?: number;
+    readonly userBrought?: boolean;
 }

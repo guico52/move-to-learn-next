@@ -7,76 +7,105 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import CourseBadge from '../../components/CourseBadge';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import styles from '../../styles/Course.module.css';
-import { CourseType } from '@prisma/client';
+import { CourseDto, CourseTypeDto } from '@/api/model/dto';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/utils/executor';
+import { ApiResponse } from '@/api/model/static/ApiResponse';
 
-interface Chapter {
-  id: string;
-  title: string;
-  description: string;
-  order: number;
-  content: string | null;
-}
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  image: string | null;
-  type: CourseType;
-  chapters: Chapter[];
-}
 
 interface Progress {
   totalChapters: number;
   completedCount: number;
   progressPercentage: number;
-  nextChapter: Chapter | null;
+  nextChapter: CourseDto['CourseController/COURSE_DETAIL']['chapters'][number] | null;
   completedChapterIds: string[];
 }
 
 const CourseDetail: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseDto['CourseController/COURSE_DETAIL'] | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
 
   // 获取课程详情和学习进度
-  useEffect(() => {
-    const fetchCourseAndProgress = async () => {
-      if (!id) return;
-      try {
-        setLoading(true);
-        // 获取课程详情
-        const courseResponse = await api.courseController.getCourseById({
-          id: id as string
-        });
-        if (courseResponse.data.success) {
-          setCourse(courseResponse.data.data);
-        }
-        // 进度
-        const progress = {
-          totalChapters: courseResponse.data.data?.chapters.length || 0,
-          completedCount: courseResponse.data.data?.chapters.filter(ch => ch.progress?.completed).length || 0,
-          progressPercentage: courseResponse.data.data?.chapters.filter(ch => ch.progress?.completed).length / courseResponse.data.data?.chapters.length * 100 || 0,
-          nextChapter: courseResponse.data.data?.chapters.find(ch => !ch.progress?.completed) || null,
-          completedChapterIds: courseResponse.data.data?.chapters.filter(ch => ch.progress?.completed).map(ch => ch.id) || []
-        }
-        setProgress(progress)
-      } catch (err) {
-        setError('加载课程失败，请稍后重试');
-        console.error('获取课程详情失败:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCourseAndProgress = async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      // 获取课程详情
+      const response = await api.courseController.getCourseById({
+        id: id as string
+      });
+      
+      const result = (response) as ApiResponse<CourseDto['CourseController/COURSE_DETAIL']>;
+      console.log("result", result);
+      if (result.data.success && result.data.data) {
+        const data = result.data.data;
+        // 转换章节数据
+        const chapters: CourseDto['CourseController/COURSE_DETAIL']['chapters'] = data.chapters
 
+        const courseData: CourseDto['CourseController/COURSE_DETAIL'] = data;
+        console.log("courseData", courseData);
+        setCourse(courseData);
+        
+        // 如果用户已购买，才获取进度
+        if (courseData.userCourseBuy.length > 0) {
+          const newProgress: Progress = {
+            totalChapters: courseData.chapters.length,
+            completedCount: courseData.chapters.filter(ch => ch.progress?.completed).length,
+            progressPercentage: (courseData.chapters.filter(ch => ch.progress?.completed).length / courseData.chapters.length) * 100,
+            nextChapter: courseData.chapters.find(ch => !ch.progress?.completed) || null,
+            completedChapterIds: courseData.chapters.filter(ch => ch.progress?.completed).map(ch => ch.id)
+          };
+          setProgress(newProgress);
+        }
+      }
+    } catch (err) {
+      setError('加载课程失败，请稍后重试');
+      console.error('获取课程详情失败:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCourseAndProgress();
   }, [id]);
+
+  // 购买课程
+  const handlePurchase = async () => {
+    if (!course || purchasing) return;
+    
+    try {
+      setPurchasing(true);
+      // 调用购买API
+      const response = await api.courseController.buyCourse({
+        id: course.id
+      });
+      
+      const result = (await response) as ApiResponse<CourseDto['CourseController/COURSE_WITH_CHAPTER']>;
+      
+      console.log("result", result);
+      if (result.success) {
+        // 更新课程状态
+        console.log("result.data", result.data);
+        setCourse(result.data);
+        
+        // 显示成功消息
+        alert('购买成功！');
+      }
+    } catch (err) {
+      console.error('购买失败:', err);
+      alert('购买失败，请稍后重试');
+    } finally {
+      setPurchasing(false);
+    }
+  };
 
   // 判断章节是否可访问
   const isChapterAccessible = (chapterOrder: number) => {
@@ -105,6 +134,8 @@ const CourseDetail: NextPage = () => {
   }
 
   if (error || !course) {
+    console.log("error", error);
+    console.log("course", course);
     return (
       <div className={styles.container}>
         <Head>
@@ -145,11 +176,32 @@ const CourseDetail: NextPage = () => {
           <div className={styles.courseInfo}>
             <h1>{course.title}</h1>
             <p>{course.description}</p>
-            <div className={styles.courseType}>{course.type} 课程</div>
+            <div className={styles.courseType}>
+              {course.type && typeof course.type === 'object' && course.type.name ? course.type.name : '未分类'} 课程
+            </div>
+            {!course.userBrought && (
+              <button 
+                className={styles.purchaseButton}
+                onClick={handlePurchase}
+                disabled={purchasing}
+              >
+                {purchasing ? (
+                  <span className={styles.purchaseLoading}>
+                    <LoadingSpinner size="small" color="white" />
+                    <span>购买中...</span>
+                  </span>
+                ) : '免费获取'}
+              </button>
+            )}
+            {course.userBrought && (
+              <div className={styles.purchaseStatus}>
+                已获得课程访问权限
+              </div>
+            )}
           </div>
           
           <div className={styles.courseProgress}>
-            {
+            {course.userBrought && progress && (
               <div className={styles.progressCard}>
                 <div className={styles.progressTitle}>学习进度</div>
                 <div className={styles.progressBar}>
@@ -168,9 +220,9 @@ const CourseDetail: NextPage = () => {
                   </Link>
                 )}
               </div>
-            }
+            )}
             
-            <div className={styles.badgeContainer}>
+            {/* <div className={styles.badgeContainer}>
               <div className={styles.badgeWrapper}>
                 <CourseBadge 
                   type={course.type} 
@@ -182,7 +234,7 @@ const CourseDetail: NextPage = () => {
                   <p>{progress?.progressPercentage === 100 ? '恭喜获得课程徽章！' : '完成所有章节即可获得徽章'}</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

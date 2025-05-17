@@ -8,9 +8,9 @@ import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import DashboardTitle from '../../components/DashboardTitle';
-import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/DashboardCourses.module.css';
 import { FiBook, FiClock, FiStar, FiUsers } from 'react-icons/fi';
+import { api } from '@/utils/executor';
 
 // 课程分类数据
 const courseCategories = [
@@ -66,7 +66,6 @@ interface Course {
 
 const Courses: NextPage = () => {
   const router = useRouter();
-  const { user, isLoggedIn } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,19 +77,20 @@ const Courses: NextPage = () => {
 
   // 获取课程数据
   useEffect(() => {
-    if (user) {
-      fetchCourses();
-    }
-  }, [isLoggedIn, user]);
+    fetchCourses();
+  }, []);
 
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/courses');
+      const response = await api.courseController.getAllCourses({
+        type: ''
+      });
       
       if (response.data.success) {
-        setCourses(response.data.courses);
+        setCourses(response.data.data);
       }
+      setLoading(false);
     } catch (err) {
       setError('加载课程失败，请稍后重试');
       console.error('获取课程失败:', err);

@@ -7,9 +7,10 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import CourseBadge from '../../components/CourseBadge';
-import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/Course.module.css';
 import { CourseType } from '@prisma/client';
+import { useAuthStore } from '@/store/authStore';
+import { api } from '@/utils/executor';
 
 interface Chapter {
   id: string;
@@ -39,7 +40,6 @@ interface Progress {
 const CourseDetail: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { user, isLoggedIn } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,24 +48,25 @@ const CourseDetail: NextPage = () => {
   // 获取课程详情和学习进度
   useEffect(() => {
     const fetchCourseAndProgress = async () => {
-      if (!id || !user) return;
-
+      if (!id) return;
       try {
         setLoading(true);
-        
         // 获取课程详情
-        const courseResponse = await axios.get(`/api/courses/${id}`);
-        
+        const courseResponse = await api.courseController.getCourseById({
+          id: id as string
+        });
         if (courseResponse.data.success) {
-          setCourse(courseResponse.data.course);
-          
-          // 获取学习进度
-          const progressResponse = await axios.get(`/api/progress/${user.id}/${id}`);
-          
-          if (progressResponse.data.success) {
-            setProgress(progressResponse.data.progress);
-          }
+          setCourse(courseResponse.data.data);
         }
+        // 进度
+        const progress = {
+          totalChapters: courseResponse.data.data?.chapters.length || 0,
+          completedCount: courseResponse.data.data?.chapters.filter(ch => ch.progress?.completed).length || 0,
+          progressPercentage: courseResponse.data.data?.chapters.filter(ch => ch.progress?.completed).length / courseResponse.data.data?.chapters.length * 100 || 0,
+          nextChapter: courseResponse.data.data?.chapters.find(ch => !ch.progress?.completed) || null,
+          completedChapterIds: courseResponse.data.data?.chapters.filter(ch => ch.progress?.completed).map(ch => ch.id) || []
+        }
+        setProgress(progress)
       } catch (err) {
         setError('加载课程失败，请稍后重试');
         console.error('获取课程详情失败:', err);
@@ -75,18 +76,17 @@ const CourseDetail: NextPage = () => {
     };
 
     fetchCourseAndProgress();
-  }, [id, user]);
+  }, [id]);
 
   // 判断章节是否可访问
   const isChapterAccessible = (chapterOrder: number) => {
-    if (!progress) return chapterOrder === 1; // 如果没有进度数据，只允许访问第一章
     
     // 第一章总是可访问的
     if (chapterOrder === 1) return true;
     
     // 如果前一章节已完成，则当前章节可访问
     const previousChapter = course?.chapters.find(ch => ch.order === chapterOrder - 1);
-    return previousChapter ? progress.completedChapterIds.includes(previousChapter.id) : false;
+    return previousChapter?.progress?.completed
   };
 
   if (loading) {
@@ -149,7 +149,7 @@ const CourseDetail: NextPage = () => {
           </div>
           
           <div className={styles.courseProgress}>
-            {progress && (
+            {
               <div className={styles.progressCard}>
                 <div className={styles.progressTitle}>学习进度</div>
                 <div className={styles.progressBar}>
@@ -168,7 +168,7 @@ const CourseDetail: NextPage = () => {
                   </Link>
                 )}
               </div>
-            )}
+            }
             
             <div className={styles.badgeContainer}>
               <div className={styles.badgeWrapper}>
@@ -190,7 +190,7 @@ const CourseDetail: NextPage = () => {
           <h2 className={styles.chaptersTitle}>课程章节</h2>
           <div className={styles.chaptersList}>
             {course.chapters.map((chapter) => {
-              const isCompleted = progress?.completedChapterIds.includes(chapter.id);
+              const isCompleted = chapter.progress?.completed
               const isAccessible = isChapterAccessible(chapter.order);
               
               return (

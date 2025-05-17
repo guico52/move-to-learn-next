@@ -5,7 +5,6 @@ import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/Dashboard.module.css';
-import { useAuth } from '../../hooks/useAuth';
 import { 
   WalletOutlined, 
   TrophyOutlined,
@@ -16,7 +15,6 @@ import {
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const { user, loading, isLoggedIn } = useAuth();
 
   const stats = [
     { 
@@ -60,24 +58,6 @@ const Dashboard: NextPage = () => {
     { title: '安全专家', icon: '🔒' },
   ];
 
-  // 在加载状态时显示加载界面
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <Head>
-          <title>加载中 - Move To Learn</title>
-        </Head>
-        <div className={styles.loading}>
-          <span>加载中...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 未登录时不渲染内容
-  if (!isLoggedIn) {
-    return null;
-  }
 
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;

@@ -17,50 +17,7 @@ async function checkAptosCLI(): Promise<boolean> {
   }
 }
 
-// 复制目录的辅助函数
-async function copyDir(src: string, dest: string) {
-  await fs.mkdir(dest, { recursive: true });
-  const entries = await fs.readdir(src, { withFileTypes: true });
 
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    if (entry.isDirectory()) {
-      await copyDir(srcPath, destPath);
-    } else {
-      await fs.copyFile(srcPath, destPath);
-    }
-  }
-}
-
-// 获取 Sui 框架路径
-async function getSuiFrameworkPath(): Promise<string> {
-  try {
-    // 首先尝试从环境变量获取
-    const suiPath = process.env.SUI_FRAMEWORK_PATH;
-    if (suiPath && await fs.access(suiPath).then(() => true).catch(() => false)) {
-      return suiPath;
-    }
-
-    // 如果环境变量不存在，尝试从 sui 命令获取路径
-    const { stdout } = await execAsync('where sui');
-    const suiBinPath = stdout.split('\n')[0].trim();
-    
-    // Windows 上通常 sui.exe 在 .sui\bin 目录下
-    // 框架文件在 .sui\sui-framework\packages 目录下
-    const suiHome = path.join(os.homedir(), '.sui');
-    const frameworkPath = path.join(suiHome, 'sui-framework', 'packages');
-    
-    if (await fs.access(frameworkPath).then(() => true).catch(() => false)) {
-      return frameworkPath;
-    }
-
-    throw new Error('无法找到 Sui 框架目录');
-  } catch (error) {
-    throw new Error(`获取 Sui 框架路径失败: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
 
 export default async function handler(
   req: NextApiRequest,

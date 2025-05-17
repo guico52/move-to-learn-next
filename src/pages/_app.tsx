@@ -11,6 +11,7 @@ import { mainnet, sepolia } from 'wagmi/chains';
 import { http } from 'wagmi';
 import { okxWallet } from '@rainbow-me/rainbowkit/wallets';
 import Head from 'next/head';
+import RouteGuard from '@/components/RouteGuard';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
@@ -38,40 +39,42 @@ export default function App({ Component, pageProps }: AppProps) {
   });
 
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          <Head>
-            <link rel="icon" href="/assets/aptos.png" />
-            <link rel="apple-touch-icon" href="/assets/aptos.png" />
-          </Head>
-          <Component {...pageProps} />
-          <Toaster 
-            position="top-center"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-              success: {
-                duration: 3000,
-                iconTheme: {
-                  primary: '#4caf50',
-                  secondary: '#fff',
-                },
-              },
-              error: {
+    <RouteGuard>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>
+            <Head>
+              <link rel="icon" href="/assets/aptos.png" />
+              <link rel="apple-touch-icon" href="/assets/aptos.png" />
+            </Head>
+            <Component {...pageProps} />
+            <Toaster 
+              position="top-center"
+              toastOptions={{
                 duration: 4000,
-                iconTheme: {
-                  primary: '#f44336',
-                  secondary: '#fff',
+                style: {
+                  background: '#363636',
+                  color: '#fff',
                 },
-              },
-            }}
-          />
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+                success: {
+                  duration: 3000,
+                  iconTheme: {
+                    primary: '#4caf50',
+                    secondary: '#fff',
+                  },
+                },
+                error: {
+                  duration: 4000,
+                  iconTheme: {
+                    primary: '#f44336',
+                    secondary: '#fff',
+                  },
+                },
+              }}
+            />
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </RouteGuard>
   );
 }

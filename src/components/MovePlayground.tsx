@@ -2,6 +2,7 @@ import { useState } from 'react';
 import MonacoEditor from './MonacoEditor';
 import styles from './MovePlayground.module.css';
 import Convert from 'ansi-to-html';
+import { api } from '@/utils/executor';
 
 const convert = new Convert({
   newline: true,
@@ -35,15 +36,12 @@ export default function MovePlayground() {
   const handleCompile = async () => {
     setIsCompiling(true);
     try {
-      const response = await fetch('/api/move/compile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
+      const response = await api.moveController.compile({
+        body: {
+          code: code
+        }
       });
-      const result = await response.json();
-      setCompileResult(result);
+      setCompileResult(response.data.data);
     } catch (error) {
       setCompileResult({
         success: false,

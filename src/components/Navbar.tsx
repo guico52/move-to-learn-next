@@ -1,3 +1,5 @@
+"use client"
+
 import { useAccount, useDisconnect } from 'wagmi';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -12,7 +14,10 @@ import {
   InputViewFunctionData,
 } from "@aptos-labs/ts-sdk";
 import { aptosConfig } from '@/config';
-import { useAuth } from '../hooks/useAuth';
+import { checkLoginStatus, getWalletAddress } from '@/utils/storeUtil';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAuthStore } from '@/store/authStore';
+
 
 const navLinks = [
   { href: '/courses', label: '课程' },
@@ -22,24 +27,21 @@ const navLinks = [
 ];
 
 const Navbar = () => {
-  const { address, isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
   const router = useRouter();
+  const { disconnect } = useDisconnect();
+  const { isConnected } = useAccount();
+  const { isLoggedIn, walletAddress, clearAuth } = useAuthStore();
   const [mounted, setMounted] = useState(false);
-  const { user, loading, resetAuthState } = useAuth();
+
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleDisconnect = async () => {
-    try {
-      await disconnect();
-      resetAuthState();
-      router.push('/');
-    } catch (error) {
-      console.error('退出登录失败:', error);
-    }
+  const handleLogout = () => {
+    disconnect();
+    clearAuth();
+    router.push('/');
   };
 
   const formatAddress = (address: string) => {
@@ -112,12 +114,12 @@ const Navbar = () => {
         <div className={styles.navRight}>
           {mounted && (
             <>
-              {isConnected && user ? (
+              {isLoggedIn ? (
                 <div className={styles.userInfo}>
                   <span className={styles.walletAddress}>
-                    {formatAddress(user.walletAddress)}
+                    {formatAddress(walletAddress || '')}
                   </span>
-                  <button onClick={handleDisconnect} className={styles.logoutButton}>
+                  <button onClick={handleLogout} className={styles.logoutButton}>
                     退出登录
                   </button>
                 </div>
@@ -172,7 +174,7 @@ export const createAccount = async (privateKeyHex?: string) => {
 //   }
 // };
 
-// 颁发证书
+// // 颁发证书
 // export const issueCertificate = async (
 //   adminAccount: Account,
 //   studentAddress: string,

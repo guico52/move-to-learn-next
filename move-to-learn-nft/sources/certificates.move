@@ -1,6 +1,6 @@
 // address 0x113a5836d6b3168e72e7ababe340ad91518ae6609a0499b3e5648388f949f058 {
-address 0xf713e12afbb5d65893a2b1499e9893e853cb111d5bf1693148c8ee75cb2618fa {
-module certificates {
+// address bca9ae447aca3ba892a096fbc18a15040ecc689c1ed56dcc4ee34299ddf52ad7 {
+module move_to_learn_nft::certificates {
     use std::signer;
     use std::string;
     use std::vector;
@@ -90,5 +90,4 @@ module certificates {
         // addr == @move_to_learn_nft
         addr == @default
     }
-}
 }

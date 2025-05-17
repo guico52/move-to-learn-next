@@ -1,5 +1,5 @@
 #[test_only]
-module my_first_module::message_tests {
+module move_to_learn_nft::message_tests {
     use std::string;
     use std::signer;
     use aptos_framework::account;

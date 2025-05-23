@@ -19,9 +19,7 @@ const Login: NextPage = () => {
     if (isConnected) {
       if (isLoggedIn) {
         // 获取重定向地址或默认跳转到 dashboard
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirectPath = urlParams.get('redirect') || '/dashboard';
-        router.push(redirectPath);
+        router.push('/');
       } else {
         // 如果没有登录，获取钱包地址 
         if (address) {

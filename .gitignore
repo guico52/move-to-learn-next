@@ -11,6 +11,9 @@
 # next.js
 /.next/
 /out/
+/move-to-learn-nft/.idea/
+/move-to-learn-nft/.vscode/
+/move-to-learn-nft/Move.lock
 
 # production
 /build

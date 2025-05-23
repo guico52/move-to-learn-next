@@ -9,6 +9,7 @@ import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/Chapter.module.css';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/utils/executor';
+import { AptosCertificates, aptosClient } from '@/utils/AptosCertificates';
 
 interface Chapter {
   id: string;
@@ -30,6 +31,7 @@ const ChapterPage: NextPage = () => {
   const { id } = router.query;
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const { walletAddress } = useAuthStore();
+  const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 
   useEffect(() => {
     const fetchChapter = async () => {
@@ -48,6 +50,45 @@ const ChapterPage: NextPage = () => {
     fetchChapter();
   }, [id, walletAddress]);
 
+  const handleNextChapter = async () => {
+    if (!chapter || isUpdatingProgress) return;
+
+    try {
+      setIsUpdatingProgress(true);
+      
+
+      // 如果有下一章，跳转到下一章
+      if (chapter.nextChapterId) {
+              // 更新当前章节的完成状态
+      await api.progressController.updateProgress({
+        chapterId: chapter.id,
+        courseId: chapter.courseId
+      });
+
+        router.push(`/chapters/${chapter.nextChapterId}`);
+      } else {
+        // 更新当前章节的完成状态
+        await api.progressController.finished({
+          chapterId: chapter.id,
+          courseId: chapter.courseId
+        });
+        // 如果没有下一章，签发给学生证书,返回课程页面
+        await aptosClient.issueCertificate(walletAddress, chapter.courseId, 1);
+        router.push(`/courses/${chapter.courseId}`);
+      }
+    } catch (error) {
+      console.error('更新进度失败:', error);
+      // 即使更新进度失败，也允许用户继续
+      if (chapter.nextChapterId) {
+        router.push(`/chapters/${chapter.nextChapterId}`);
+      } else {
+        router.push(`/courses/${chapter.courseId}`);
+      }
+    } finally {
+      setIsUpdatingProgress(false);
+    }
+  };
+
   if (!chapter) {
     return <div>Loading...</div>;
   }
@@ -65,15 +106,13 @@ const ChapterPage: NextPage = () => {
           <div className={styles.chapterContent}>
             {chapter.content}
           </div>
-          {chapter.nextChapterId ? (
-            <Link href={`/chapters/${chapter.nextChapterId}`}>
-              <button className={styles.nextButton}>下一章</button>
-            </Link>
-          ) : (
-            <Link href={`/courses/${chapter.courseId}`}>
-              <button className={styles.nextButton}>返回课程</button>
-            </Link>
-          )}
+          <button 
+            onClick={handleNextChapter}
+            className={styles.nextButton}
+            disabled={isUpdatingProgress}
+          >
+            {isUpdatingProgress ? '更新进度中...' : chapter.nextChapterId ? '下一章' : '返回课程'}
+          </button>
         </main>
       </div>
     </div>

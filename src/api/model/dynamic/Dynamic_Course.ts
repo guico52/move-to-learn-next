@@ -38,6 +38,7 @@ export interface Dynamic_Course {
      */
     readonly updatedAt?: string;
     readonly price?: number;
+    readonly finishReward?: number;
     /**
      * type
      */

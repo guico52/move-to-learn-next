@@ -6,7 +6,7 @@ module move_to_learn_nft::certificates {
     use std::vector;
     use aptos_framework::timestamp;
     
-    struct Certificate has key, store, drop, copy {
+    public struct Certificate has key, store, drop, copy {
         student: address,
         course_id: string::String,
         completion_date: u64,
@@ -14,11 +14,11 @@ module move_to_learn_nft::certificates {
         credits_earned: u64
     }
 
-    struct Credits has key {
+    public struct Credits has key {
         amount: u64
     }
 
-    struct CertificateStore has key {
+    public struct CertificateStore has key {
         certificates: vector<Certificate>
     }
 

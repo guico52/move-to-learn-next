@@ -42,25 +42,25 @@ const CourseDetail: NextPage = () => {
         id: id as string
       });
       
-      const result = (response) as ApiResponse<CourseDto['CourseController/COURSE_DETAIL']>;
+      const result = response as any;
       console.log("result", result);
-      if (result.data.success && result.data.data) {
-        const data = result.data.data;
-        // 转换章节数据
-        const chapters: CourseDto['CourseController/COURSE_DETAIL']['chapters'] = data.chapters
-
-        const courseData: CourseDto['CourseController/COURSE_DETAIL'] = data;
+      if (result.data) {
+        const courseData = result.data.data;
         console.log("courseData", courseData);
         setCourse(courseData);
         
-        // 如果用户已购买，才获取进度
-        if (courseData.userCourseBuy.length > 0) {
-          const newProgress: Progress = {
+        // 如果用户已购买，计算进度
+        if (courseData.userCourseBuy) {
+          const newProgress = {
             totalChapters: courseData.chapters.length,
-            completedCount: courseData.chapters.filter(ch => ch.progress?.completed).length,
-            progressPercentage: (courseData.chapters.filter(ch => ch.progress?.completed).length / courseData.chapters.length) * 100,
-            nextChapter: courseData.chapters.find(ch => !ch.progress?.completed) || null,
-            completedChapterIds: courseData.chapters.filter(ch => ch.progress?.completed).map(ch => ch.id)
+            completedCount: courseData.userProgressLength || 0,
+            progressPercentage: ((courseData.userProgressLength || 0) / courseData.chapters.length) * 100,
+            nextChapter: courseData.chapters.find((ch: any) => 
+              !(courseData.userProgress || []).some((p: any) => p.completed && p.id === ch.id)
+            ) || null,
+            completedChapterIds: (courseData.userProgress || [])
+              .filter((p: any) => p.completed)
+              .map((p: any) => p.id)
           };
           setProgress(newProgress);
         }
@@ -88,13 +88,13 @@ const CourseDetail: NextPage = () => {
         id: course.id
       });
       
-      const result = (await response) as ApiResponse<CourseDto['CourseController/COURSE_WITH_CHAPTER']>;
+      const result = (await response) as any;
       
       console.log("result", result);
       if (result.success) {
         // 更新课程状态
         console.log("result.data", result.data);
-        setCourse(result.data);
+        setCourse(prev => ({...prev, ...result.data}));
         
         // 显示成功消息
         alert('购买成功！');
@@ -109,13 +109,13 @@ const CourseDetail: NextPage = () => {
 
   // 判断章节是否可访问
   const isChapterAccessible = (chapterOrder: number) => {
+    if (!course) return false;
     
     // 第一章总是可访问的
     if (chapterOrder === 1) return true;
     
     // 如果前一章节已完成，则当前章节可访问
-    const previousChapter = course?.chapters.find(ch => ch.order === chapterOrder - 1);
-    return previousChapter?.progress?.completed
+    return course.userProgressLength >= chapterOrder - 1;
   };
 
   if (loading) {
@@ -242,7 +242,8 @@ const CourseDetail: NextPage = () => {
           <h2 className={styles.chaptersTitle}>课程章节</h2>
           <div className={styles.chaptersList}>
             {course.chapters.map((chapter) => {
-              const isCompleted = chapter.progress?.completed
+              // chapter.id 在 course.userProgress 中
+              const isCompleted = course.userProgress.some(p => p.chapter.id === chapter.id);
               const isAccessible = isChapterAccessible(chapter.order);
               
               return (

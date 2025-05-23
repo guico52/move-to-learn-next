@@ -27,6 +27,7 @@ export type CourseDto = {
          */
         readonly updatedAt: string;
         readonly price: number;
+        readonly finishReward: number;
         /**
          * type
          */
@@ -70,6 +71,7 @@ export type CourseDto = {
          */
         readonly updatedAt: string;
         readonly price: number;
+        readonly finishReward: number;
         readonly courseLength: number;
         readonly userProgressLength: number;
         readonly userBrought: boolean;
@@ -138,6 +140,15 @@ export type CourseDto = {
              * updatedAt
              */
             readonly updatedAt: string;
+            /**
+             * chapterId
+             */
+            readonly chapter: {
+                /**
+                 * id
+                 */
+                readonly id: string;
+            };
         }>;
         readonly userCourseBuy: ReadonlyArray<{
             /**

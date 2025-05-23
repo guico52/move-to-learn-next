@@ -1,118 +1,198 @@
+# Aptos 证书系统工具类
 
+基于您的智能合约 `dev::certificate` 重新构建的 TypeScript 工具类，用于与 Aptos 区块链上的证书颁发系统进行交互。
 
-# Move to Learn Next
+## 功能特性
 
-一个基于 Next.js 的全栈 Web3 学习平台。
+### 🎓 证书管理
+- **NFT 证书颁发**: 为用户颁发课程完成证书 NFT
+- **证书查询**: 查看用户已获得的证书
+- **证书统计**: 查看特定课程的证书颁发统计
 
-## 技术架构
+### 💰 代币系统
+- **M2L 代币**: 自定义的学习积分代币
+- **代币颁发**: 与证书一起颁发代币奖励
+- **余额查询**: 查看用户代币余额
+- **供应量查询**: 查看代币总供应量
 
-### 架构概览
+### 📚 课程管理
+- **课程注册**: 添加新课程到系统
+- **课程更新**: 修改现有课程信息
+- **课程删除**: 从系统中移除课程
+- **课程查询**: 获取课程详细信息
 
-![](./static/struct.png)
+## 快速开始
 
-该项目采用现代化的三层架构设计：
+### 安装依赖
 
-#### 1. 前端层 (Frontend)
-- **核心框架**: Next.js 15.x
-- **特点**：
-  - 服务端渲染 (SSR) 支持
-  - App Router 和 Pages Router 混合架构
-  - TypeScript 类型支持
-  - Tailwind CSS 样式解决方案
-
-#### 2. 后端层 (Backend)
-- **API 服务**: Next.js API Routes
-- **数据持久化**:
-  - Prisma ORM 数据库操作
-  - PostgreSQL 关系型数据库
-- **特点**：
-  - 类型安全的数据库操作
-  - 自动化的数据迁移
-  - 灵活的数据模型定义
-
-#### 3. Web3 集成层
-- **以太坊集成**:
-  - Wagmi/Viem 用于以太坊交互
-  - RainbowKit 钱包连接
-- **Aptos 集成**:
-  - Aptos SDK 用于 Aptos 链交互
-
-### 主要功能
-
-1. **用户系统**
-   - Web3 钱包登录
-   - 用户信息管理
-
-2. **学习平台**
-   - 教育培训资料
-   - AI 辅助学习
-   - Move 语言操场
-
-3. **后台管理**
-   - 内容管理
-   - 用户管理
-
-### 技术特点
-
-1. **现代化开发体验**
-   - TypeScript 保证类型安全
-   - ESLint 代码规范
-   - pnpm 包管理
-
-2. **高性能**
-   - 服务端渲染优化
-   - 自动静态优化
-   - 智能数据缓存
-
-3. **可扩展性**
-   - 模块化架构
-   - 清晰的代码组织
-   - 完善的开发工具链
-
-### 开发环境要求
-
-- Node.js 18+
-- PostgreSQL 14+
-- pnpm 8+
-
-### 快速开始
-
-1. 克隆项目
 ```bash
-git clone [repository-url]
+npm install @aptos-labs/ts-sdk
 ```
 
-2. 安装依赖
-```bash
-pnpm install
+### 基本使用
+
+```typescript
+import { aptosClient } from './src/utils/AptosCertificates';
+
+// 初始化合约（管理员操作，只需执行一次）
+await aptosClient.initialize();
+
+// 创建用户账户
+const userAccount = aptosClient.createUserAccount();
+
+// 申请测试代币
+await aptosClient.fundAccount(userAccount.accountAddress.toString());
+
+// 设置课程
+await aptosClient.setCourse(
+  "blockchain_101", 
+  100, 
+  "https://example.com/metadata.json"
+);
+
+// 为用户颁发证书和代币
+await aptosClient.mintCertificateAndCoins(userAccount, "blockchain_101", 50);
 ```
 
-3. 环境配置
-```bash
-cp .env.example .env.local
+## API 文档
+
+### 管理员操作
+
+#### `initialize()`
+初始化智能合约系统
+```typescript
+await aptosClient.initialize();
 ```
 
-4. 数据库设置
-```bash
-pnpm prisma migrate dev
-pnpm prisma:seed
+#### `setCourse(courseId, points, metadataUri)`
+设置或更新课程信息
+```typescript
+await aptosClient.setCourse(
+  "course_id",     // 课程ID
+  100,             // 积分奖励
+  "metadata_uri"   // 元数据URI
+);
 ```
 
-5. 启动开发服务器
-```bash
-pnpm dev
+#### `removeCourse(courseId)`
+删除课程
+```typescript
+await aptosClient.removeCourse("course_id");
 ```
 
-### 待办事项
+#### `mintCertificateAndCoins(userAccount, courseId, coinAmount)`
+为用户颁发证书NFT和代币
+```typescript
+await aptosClient.mintCertificateAndCoins(
+  userAccount,     // 用户账户对象
+  "course_id",     // 课程ID
+  50               // 代币数量
+);
+```
 
-- [x] 完成页面框架的搭建
-- [x] 完成首页内容
-- [x] 完成钱包登录功能
-- [x] 完成后台功能
-- [x] 完成教育培训资料内容的填充
-- [x] 完成AI内容接入
-- [x] 完成move操场
+### 查询操作
 
-github地址：[guico52/move-to-learn-next](https://github.com/guico52/move-to-learn-next?tab=readme-ov-file#架构概览)
+#### `getCourseInfo(courseId)`
+获取课程信息
+```typescript
+const courseInfo = await aptosClient.getCourseInfo("course_id");
+// 返回: { points: number, metadata_uri: string }
+```
 
-部署地址：https://move-to-learn-next-xlaz.vercel.app
+#### `viewUserCertificates(userAddress)`
+查看用户证书
+```typescript
+const certificates = await aptosClient.viewUserCertificates("0x...");
+```
+
+#### `viewUserBalance(userAddress)`
+查看用户代币余额
+```typescript
+const balance = await aptosClient.viewUserBalance("0x...");
+```
+
+#### `viewCertificateStats(courseId)`
+查看证书统计
+```typescript
+const stats = await aptosClient.viewCertificateStats("course_id");
+```
+
+#### `viewTotalCoinSupply()`
+查看代币总供应量
+```typescript
+const totalSupply = await aptosClient.viewTotalCoinSupply();
+```
+
+### 工具函数
+
+#### `createUserAccount()`
+创建新用户账户
+```typescript
+const userAccount = aptosClient.createUserAccount();
+```
+
+#### `restoreAccountFromPrivateKey(privateKeyHex)`
+从私钥恢复账户
+```typescript
+const account = aptosClient.restoreAccountFromPrivateKey("0x...");
+```
+
+#### `getAccountBalance(accountAddress)`
+获取账户 APT 余额
+```typescript
+const balance = await aptosClient.getAccountBalance("0x...");
+```
+
+#### `fundAccount(accountAddress)`
+为账户申请测试代币
+```typescript
+await aptosClient.fundAccount("0x...");
+```
+
+## 数据结构
+
+### CourseMeta
+```typescript
+interface CourseMeta {
+  points: number;           // 课程积分
+  metadata_uri: string;     // 元数据URI
+}
+```
+
+### CertificateInfo
+```typescript
+interface CertificateInfo {
+  token_address: string;    // NFT代币地址
+  user_address: string;     // 用户地址
+  course_id: string;        // 课程ID
+}
+```
+
+## 运行示例
+
+运行包含的示例代码来了解完整的使用流程：
+
+```bash
+npx ts-node src/utils/example.ts
+```
+
+## 注意事项
+
+1. **网络配置**: 当前配置为 Aptos 测试网 (TESTNET)
+2. **管理员权限**: 某些操作需要管理员账户权限
+3. **Gas 费用**: 所有交易都需要 APT 来支付 gas 费用
+4. **多签名交易**: 颁发证书需要管理员和用户双方签名
+
+## 错误处理
+
+工具类包含完整的错误处理机制，所有异步操作都包装在 try-catch 块中，并提供详细的错误信息。
+
+## 配置
+
+当前配置参数：
+- **网络**: Aptos Testnet
+- **模块地址**: `dev`
+- **模块名称**: `certificate`
+- **管理员地址**: `86314c7111dfd122845a1de317550ffd4371c18e9dfe9c316597ef9ed1c8ee76`
+
+如需修改配置，请编辑 `src/utils/AptosCertificates.ts` 文件中的相关常量。
